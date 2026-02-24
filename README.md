@@ -55,5 +55,7 @@ Use:
   - Runs Kafka Testcontainers integration tests in a dedicated job
 - Release workflow: `.github/workflows/release.yml`
   - Triggered on tags matching `v*`
-  - Builds and uploads native packages for Linux (DEB), Windows (MSI), and macOS (DMG)
-  - Also uploads portable launcher bundles (Linux `.tar.gz`, Windows `.zip`, macOS `.zip`) with bundled runtime (no separate Java install required)
+  - Builds and uploads release assets in this set:
+    - Windows: MSI (main) + ZIP (portable)
+    - Linux: AppImage
+    - macOS: DMG

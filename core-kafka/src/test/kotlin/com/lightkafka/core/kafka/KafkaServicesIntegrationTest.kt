@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.apache.kafka.clients.admin.Admin
 import org.apache.kafka.clients.admin.AdminClientConfig
@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit
 class KafkaServicesIntegrationTest {
     @Test
     fun `admin service lists and describes created topics`() =
-        runTest {
+        runBlocking {
             val topicName = uniqueTopicName("admin")
             createTopic(topicName, partitions = 2)
 
@@ -66,7 +66,7 @@ class KafkaServicesIntegrationTest {
 
     @Test
     fun `producer sends and consumer reads from earliest`() =
-        runTest {
+        runBlocking {
             val topicName = uniqueTopicName("earliest")
             createTopic(topicName)
 
@@ -120,7 +120,7 @@ class KafkaServicesIntegrationTest {
 
     @Test
     fun `consumer latest only receives records produced after session start`() =
-        runTest {
+        runBlocking {
             val topicName = uniqueTopicName("latest")
             createTopic(topicName)
 
@@ -144,7 +144,7 @@ class KafkaServicesIntegrationTest {
 
                 val events = Channel<ConsumerEvent>(capacity = Channel.UNLIMITED)
                 val collector =
-                    backgroundScope.launch {
+                    launch {
                         consumerService.startSession(
                             ConsumerSessionRequest(
                                 topic = topicName,

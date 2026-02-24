@@ -25,7 +25,7 @@ compose.desktop {
         nativeDistributions {
             packageName = "LightKafkaViewer"
             packageVersion = "1.0.0"
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.AppImage)
 
             modules(
                 "java.base",

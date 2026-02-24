@@ -17,11 +17,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Linux (DEB)
+          - name: Linux (AppImage)
             os: ubuntu-latest
-            artifact_name: linux-deb
-            artifact_path: app-desktop/build/compose/binaries/main/deb/*.deb
-            portable_archive: light-kafka-viewer-linux-portable.tar.gz
+            artifact_name: linux-appimage
+            artifact_path: |
+              app-desktop/build/compose/binaries/main/appimage/*.AppImage
+              app-desktop/build/compose/binaries/main/appimage/*.appimage
+              app-desktop/build/compose/binaries/main/app/*.AppImage
+              app-desktop/build/compose/binaries/main/app/*.appimage
           - name: Windows (MSI)
             os: windows-latest
             artifact_name: windows-msi
@@ -58,32 +61,6 @@ jobs:
         if: runner.os != 'Windows'
         run: ./gradlew --no-daemon :app-desktop:createDistributable :app-desktop:packageDistributionForCurrentOS
 
-      - name: Archive portable launcher bundle (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          mkdir -p dist
-          shopt -s nullglob
-          apps=(app-desktop/build/compose/binaries/main/app/*)
-          if [ ${#apps[@]} -eq 0 ]; then
-            echo "No distributable app bundle found"
-            exit 1
-          fi
-          app_path="${apps[0]}"
-          tar -czf "dist/${{ matrix.portable_archive }}" -C "$(dirname "$app_path")" "$(basename "$app_path")"
-
-      - name: Archive portable launcher bundle (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          mkdir -p dist
-          shopt -s nullglob
-          apps=(app-desktop/build/compose/binaries/main/app/*)
-          if [ ${#apps[@]} -eq 0 ]; then
-            echo "No distributable app bundle found"
-            exit 1
-          fi
-          app_path="${apps[0]}"
-          ditto -c -k --sequesterRsrc --keepParent "$app_path" "dist/${{ matrix.portable_archive }}"
-
       - name: Archive portable launcher bundle (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
@@ -99,9 +76,15 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact_name }}
-          path: |
-            ${{ matrix.artifact_path }}
-            dist/${{ matrix.portable_archive }}
+          path: ${{ matrix.artifact_path }}
+          if-no-files-found: error
+
+      - name: Upload Windows portable artifact
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-portable
+          path: dist/${{ matrix.portable_archive }}
           if-no-files-found: error
 
   publish-release:
@@ -123,8 +106,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/**/*.deb
+            dist/**/*.AppImage
+            dist/**/*.appimage
             dist/**/*.msi
             dist/**/*.dmg
-            dist/**/*.zip
-            dist/**/*.tar.gz
+            dist/**/*windows-portable*.zip
