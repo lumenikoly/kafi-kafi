@@ -25,6 +25,8 @@ sdk env
 
 ```bash
 ./gradlew build
+./gradlew test
+./gradlew :core-kafka:integrationTest
 ./gradlew :app-desktop:run
 ./gradlew ktlintCheck
 ./gradlew detektAll
@@ -45,3 +47,12 @@ Use:
 ./gradlew :app-desktop:createDistributable
 ./gradlew :app-desktop:packageDistributionForCurrentOS
 ```
+
+## GitHub workflows
+
+- CI workflow: `.github/workflows/ci.yml`
+  - Runs `ktlintCheck` and unit tests on pushes/PRs
+  - Runs Kafka Testcontainers integration tests in a dedicated job
+- Release workflow: `.github/workflows/release.yml`
+  - Triggered on tags matching `v*`
+  - Builds and uploads native packages for Linux (DEB), Windows (MSI), and macOS (DMG)
