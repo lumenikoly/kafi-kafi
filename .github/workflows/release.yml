@@ -21,14 +21,17 @@ jobs:
             os: ubuntu-latest
             artifact_name: linux-deb
             artifact_path: app-desktop/build/compose/binaries/main/deb/*.deb
+            portable_archive: light-kafka-viewer-linux-portable.tar.gz
           - name: Windows (MSI)
             os: windows-latest
             artifact_name: windows-msi
             artifact_path: app-desktop/build/compose/binaries/main/msi/*.msi
+            portable_archive: light-kafka-viewer-windows-portable.zip
           - name: macOS (DMG)
             os: macos-latest
             artifact_name: macos-dmg
             artifact_path: app-desktop/build/compose/binaries/main/dmg/*.dmg
+            portable_archive: light-kafka-viewer-macos-portable.zip
 
     steps:
       - name: Checkout
@@ -49,17 +52,56 @@ jobs:
 
       - name: Build native package
         if: runner.os == 'Windows'
-        run: .\gradlew.bat --no-daemon :app-desktop:packageDistributionForCurrentOS
+        run: .\gradlew.bat --no-daemon :app-desktop:createDistributable :app-desktop:packageDistributionForCurrentOS
 
       - name: Build native package
         if: runner.os != 'Windows'
-        run: ./gradlew --no-daemon :app-desktop:packageDistributionForCurrentOS
+        run: ./gradlew --no-daemon :app-desktop:createDistributable :app-desktop:packageDistributionForCurrentOS
+
+      - name: Archive portable launcher bundle (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          mkdir -p dist
+          shopt -s nullglob
+          apps=(app-desktop/build/compose/binaries/main/app/*)
+          if [ ${#apps[@]} -eq 0 ]; then
+            echo "No distributable app bundle found"
+            exit 1
+          fi
+          app_path="${apps[0]}"
+          tar -czf "dist/${{ matrix.portable_archive }}" -C "$(dirname "$app_path")" "$(basename "$app_path")"
+
+      - name: Archive portable launcher bundle (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          mkdir -p dist
+          shopt -s nullglob
+          apps=(app-desktop/build/compose/binaries/main/app/*)
+          if [ ${#apps[@]} -eq 0 ]; then
+            echo "No distributable app bundle found"
+            exit 1
+          fi
+          app_path="${apps[0]}"
+          ditto -c -k --sequesterRsrc --keepParent "$app_path" "dist/${{ matrix.portable_archive }}"
+
+      - name: Archive portable launcher bundle (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path dist -Force | Out-Null
+          $appPath = Get-ChildItem "app-desktop/build/compose/binaries/main/app" | Select-Object -First 1
+          if (-not $appPath) {
+            throw "No distributable app bundle found"
+          }
+          Compress-Archive -Path $appPath.FullName -DestinationPath "dist/${{ matrix.portable_archive }}" -Force
 
       - name: Upload package artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact_name }}
-          path: ${{ matrix.artifact_path }}
+          path: |
+            ${{ matrix.artifact_path }}
+            dist/${{ matrix.portable_archive }}
           if-no-files-found: error
 
   publish-release:
@@ -84,3 +126,5 @@ jobs:
             dist/**/*.deb
             dist/**/*.msi
             dist/**/*.dmg
+            dist/**/*.zip
+            dist/**/*.tar.gz

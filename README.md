@@ -56,3 +56,4 @@ Use:
 - Release workflow: `.github/workflows/release.yml`
   - Triggered on tags matching `v*`
   - Builds and uploads native packages for Linux (DEB), Windows (MSI), and macOS (DMG)
+  - Also uploads portable launcher bundles (Linux `.tar.gz`, Windows `.zip`, macOS `.zip`) with bundled runtime (no separate Java install required)
