@@ -1,0 +1,48 @@
+build:
+  maxIssues: 0
+
+config:
+  validation: true
+  warningsAsErrors: false
+
+processors:
+  active: true
+
+console-reports:
+  active: true
+
+output-reports:
+  active: true
+
+complexity:
+  LongMethod:
+    threshold: 100
+  LongParameterList:
+    constructorThreshold: 10
+    functionThreshold: 8
+  TooManyFunctions:
+    thresholdInClasses: 15
+    thresholdInInterfaces: 15
+
+exceptions:
+  SwallowedException:
+    active: false
+  TooGenericExceptionCaught:
+    active: false
+
+naming:
+  FunctionNaming:
+    ignoreAnnotated:
+      - Composable
+
+style:
+  MagicNumber:
+    active: false
+  ReturnCount:
+    max: 6
+
+comments:
+  UndocumentedPublicClass:
+    active: false
+  UndocumentedPublicFunction:
+    active: false
