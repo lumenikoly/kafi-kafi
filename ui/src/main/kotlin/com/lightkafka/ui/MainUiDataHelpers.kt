@@ -8,6 +8,13 @@ import com.lightkafka.core.storage.SendStatus
 
 fun messageId(message: ConsumedMessage): String = "${message.topic}:${message.partition}:${message.offset}"
 
+fun initialMainUiState(): MainUiState =
+    MainUiState(
+        profiles = emptyList(),
+        activeProfileId = null,
+        topics = emptyList(),
+    )
+
 fun selectedMessageOrNull(state: MainUiState): ConsumedMessage? {
     val selectedMessageId = state.selectedMessageId ?: return null
     return state.messages.firstOrNull { messageId(it) == selectedMessageId }

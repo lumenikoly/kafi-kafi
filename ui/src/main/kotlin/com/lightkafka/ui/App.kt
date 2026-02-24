@@ -1,31 +1,37 @@
 package com.lightkafka.ui
 
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.lightkafka.core.storage.SendStatus
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
 
 @Composable
 fun appContent() {
-    MaterialTheme {
+    MaterialTheme(
+        colorScheme =
+            lightColorScheme(
+                primary = AccentColor,
+                secondary = AccentColor,
+                surface = androidx.compose.ui.graphics.Color.White,
+                background = AppBackgroundColor,
+            ),
+    ) {
         val appDataDirectory = remember { defaultAppDataDirectory() }
         val messageExporter = remember { MessageExporter(exportDirectory = appDataDirectory.resolve("exports")) }
         val appLogStore = remember { AppLogStore(logFile = appDataDirectory.resolve("logs").resolve("app.log")) }
-        var state by remember { mutableStateOf(sampleMainUiState()) }
+        var state by remember { mutableStateOf(initialMainUiState()) }
         val dispatch = { action: MainUiAction ->
             state = reduceMainUiState(state, action)
             logAction(appLogStore, action, state)
@@ -66,6 +72,7 @@ fun appContent() {
         }
 
         Scaffold(
+            containerColor = AppBackgroundColor,
             topBar = {
                 topBar(
                     state = state,
@@ -73,33 +80,20 @@ fun appContent() {
                 )
             },
         ) { innerPadding ->
-            Row(
+            Column(
                 modifier =
                     Modifier
                         .fillMaxSize()
-                        .padding(innerPadding),
+                        .padding(innerPadding)
+                        .background(AppBackgroundColor),
             ) {
-                topicsPane(
-                    state = state,
-                    onAction = dispatch,
-                    modifier = Modifier.width(260.dp).fillMaxHeight(),
-                )
-
-                VerticalDivider()
-
                 messagesPane(
                     state = state,
                     messages = visibleMessages,
+                    selectedMessage = selectedMessage,
                     onAction = dispatch,
                     onExport = exportMessages,
-                    modifier = Modifier.weight(1f).fillMaxHeight(),
-                )
-
-                VerticalDivider()
-
-                inspectorPane(
-                    selectedMessage = selectedMessage,
-                    modifier = Modifier.width(340.dp).fillMaxHeight(),
+                    modifier = Modifier.weight(1f),
                 )
             }
         }

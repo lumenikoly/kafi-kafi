@@ -1,28 +1,31 @@
 package com.lightkafka.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,7 +33,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.lightkafka.core.kafka.ConsumedMessage
@@ -41,16 +48,17 @@ internal fun topBar(
     state: MainUiState,
     onAction: (MainUiAction) -> Unit,
 ) {
-    Surface(shadowElevation = 4.dp) {
+    Surface(color = HeaderBackgroundColor) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp),
+            modifier = Modifier.fillMaxWidth().height(56.dp).padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Text(
                 text = "Light Kafka Viewer",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
+                style = MaterialTheme.typography.titleLarge,
+                color = AccentTextStrong,
+                fontWeight = FontWeight.Bold,
             )
 
             profileSwitcher(
@@ -61,22 +69,28 @@ internal fun topBar(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Button(onClick = { onAction(MainUiAction.TogglePause) }) {
+            Button(
+                onClick = { onAction(MainUiAction.TogglePause) },
+                shape = RoundedCornerShape(20.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = AccentColor, contentColor = Color.White),
+            ) {
                 Text(if (state.isConsumerPaused) "Resume" else "Pause")
             }
 
-            TextButton(onClick = { onAction(MainUiAction.SetProducerPanelOpen(true)) }) {
-                Text("Producer")
-            }
-
-            TextButton(onClick = { onAction(MainUiAction.SetConnectionManagerOpen(true)) }) {
-                Text("Connections")
-            }
-
-            TextButton(onClick = { onAction(MainUiAction.SetDiagnosticsOpen(true)) }) {
-                Text("Diagnostics")
-            }
+            topBarLink("Producer") { onAction(MainUiAction.SetProducerPanelOpen(true)) }
+            topBarLink("Connections") { onAction(MainUiAction.SetConnectionManagerOpen(true)) }
+            topBarLink("Diagnostics") { onAction(MainUiAction.SetDiagnosticsOpen(true)) }
         }
+    }
+}
+
+@Composable
+private fun topBarLink(
+    text: String,
+    onClick: () -> Unit,
+) {
+    TextButton(onClick = onClick) {
+        Text(text, color = AccentColor)
     }
 }
 
@@ -90,12 +104,22 @@ private fun profileSwitcher(
     val activeName = profiles.firstOrNull { it.id == activeProfileId }?.name ?: "No profile"
 
     Box {
-        TextButton(onClick = { expanded = true }) {
-            Text("Profile: $activeName")
+        Surface(
+            color = Color(0xFFE9D5FF),
+            shape = RoundedCornerShape(6.dp),
+            modifier = Modifier.clickable { expanded = true },
+        ) {
+            Text(
+                text = activeName,
+                modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                color = AccentColor,
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.SemiBold,
+            )
         }
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+        androidx.compose.material3.DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             profiles.forEach { profile ->
-                DropdownMenuItem(
+                androidx.compose.material3.DropdownMenuItem(
                     text = { Text(profile.name) },
                     onClick = {
                         expanded = false
@@ -114,44 +138,40 @@ internal fun topicsPane(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.padding(12.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
+        modifier = modifier.background(Color.White),
     ) {
-        Text("Topics", style = MaterialTheme.typography.titleSmall)
+        Box(
+            modifier = Modifier.fillMaxWidth().padding(8.dp),
+        ) {
+            compactInput(
+                value = state.topicSearchQuery,
+                onValueChange = { onAction(MainUiAction.SetTopicSearch(it)) },
+                placeholder = "Search topics...",
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
 
-        OutlinedTextField(
-            value = state.topicSearchQuery,
-            onValueChange = { onAction(MainUiAction.SetTopicSearch(it)) },
-            label = { Text("Search topics") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-        )
+        HorizontalDivider(color = Color(0xFFE5E7EB))
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             items(state.visibleTopics()) { topic ->
                 val selected = topic == state.selectedTopic
-                val background =
-                    if (selected) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface
-                Surface(
+                val background = if (selected) Color(0xFFE9D5FF) else Color.White
+                val textColor = if (selected) AccentTextStrong else Color(0xFF4B5563)
+                Text(
+                    text = topic,
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .selectable(
-                                selected = selected,
-                                onClick = { onAction(MainUiAction.SelectTopic(topic)) },
-                            ),
-                    color = background,
-                    tonalElevation = if (selected) 2.dp else 0.dp,
-                    shape = MaterialTheme.shapes.small,
-                ) {
-                    Text(
-                        text = topic,
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
-                    )
-                }
+                            .background(background)
+                            .clickable { onAction(MainUiAction.SelectTopic(topic)) }
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                    color = textColor,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
+                )
             }
         }
     }
@@ -161,107 +181,76 @@ internal fun topicsPane(
 internal fun messagesPane(
     state: MainUiState,
     messages: List<ConsumedMessage>,
+    selectedMessage: ConsumedMessage?,
     onAction: (MainUiAction) -> Unit,
     onExport: (MessageExportFormat, Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier.padding(12.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        filterBar(state = state, onAction = onAction)
-        exportBar(state = state, onExport = onExport)
-        messageHeaderRow()
+    Row(modifier = modifier.fillMaxSize()) {
+        topicsPane(
+            state = state,
+            onAction = onAction,
+            modifier = Modifier.width(236.dp).fillMaxHeight(),
+        )
 
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            items(items = messages, key = { messageId(it) }) { message ->
-                messageRow(
-                    message = message,
-                    selected = state.selectedMessageId == messageId(message),
-                    onClick = { onAction(MainUiAction.SelectMessage(messageId(message))) },
-                )
+        VerticalDivider(color = Color(0xFFD1D5DB))
+
+        Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
+            Column(modifier = Modifier.weight(0.54f).fillMaxWidth().background(Color.White)) {
+                messagesControlBar(state = state, onAction = onAction, onExport = onExport)
+                messageHeaderRow()
+                LazyColumn(modifier = Modifier.fillMaxSize().background(Color.White)) {
+                    items(items = messages, key = { messageId(it) }) { message ->
+                        messageRow(
+                            message = message,
+                            selected = state.selectedMessageId == messageId(message),
+                            onClick = { onAction(MainUiAction.SelectMessage(messageId(message))) },
+                        )
+                    }
+                }
             }
-        }
-    }
-}
 
-@Composable
-private fun exportBar(
-    state: MainUiState,
-    onExport: (MessageExportFormat, Boolean) -> Unit,
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        TextButton(onClick = { onExport(MessageExportFormat.JSONL, false) }) {
-            Text("Export JSONL")
-        }
-        TextButton(onClick = { onExport(MessageExportFormat.CSV, false) }) {
-            Text("Export CSV")
-        }
-        TextButton(
-            onClick = { onExport(MessageExportFormat.JSONL, true) },
-            enabled = state.selectedMessageId != null,
-        ) {
-            Text("Export Selected")
-        }
+            HorizontalDivider(color = Color(0xFFD1D5DB), thickness = 1.dp)
 
-        Spacer(modifier = Modifier.weight(1f))
-
-        if (state.exportStatus != null) {
-            Text(
-                text = state.exportStatus,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            inspectorPane(
+                selectedMessage = selectedMessage,
+                modifier = Modifier.weight(0.46f).fillMaxWidth(),
             )
         }
     }
 }
 
 @Composable
-private fun filterBar(
+private fun messagesControlBar(
     state: MainUiState,
     onAction: (MainUiAction) -> Unit,
+    onExport: (MessageExportFormat, Boolean) -> Unit,
 ) {
-    val scrollState = rememberScrollState()
     Row(
-        modifier = Modifier.fillMaxWidth().horizontalScroll(scrollState),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.fillMaxWidth().background(Color(0xFFF3F4F6)).padding(horizontal = 8.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        OutlinedTextField(
+        compactInput(
             value = state.filters.globalSearch,
             onValueChange = { onAction(MainUiAction.SetGlobalSearch(it)) },
-            label = { Text("Search") },
-            singleLine = true,
-            modifier = Modifier.width(180.dp),
+            placeholder = "Filter...",
+            modifier = Modifier.width(132.dp),
         )
-        OutlinedTextField(
-            value = state.filters.keySearch,
-            onValueChange = { onAction(MainUiAction.SetKeySearch(it)) },
-            label = { Text("Key contains") },
-            singleLine = true,
-            modifier = Modifier.width(170.dp),
-        )
-        OutlinedTextField(
-            value = state.filters.valueSearch,
-            onValueChange = { onAction(MainUiAction.SetValueSearch(it)) },
-            label = { Text("Value contains") },
-            singleLine = true,
-            modifier = Modifier.width(170.dp),
-        )
-        OutlinedTextField(
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        compactInput(
             value = state.filters.partitionFilter,
             onValueChange = { onAction(MainUiAction.SetPartitionFilter(it)) },
-            label = { Text("Partition") },
-            singleLine = true,
-            modifier = Modifier.width(120.dp),
+            placeholder = "All Partitions",
+            modifier = Modifier.width(124.dp),
         )
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        TextButton(onClick = { onExport(MessageExportFormat.JSONL, false) }) {
+            Text("Export", color = AccentColor)
+        }
         TextButton(
             onClick = {
                 onAction(MainUiAction.SetGlobalSearch(""))
@@ -270,29 +259,44 @@ private fun filterBar(
                 onAction(MainUiAction.SetPartitionFilter(""))
             },
         ) {
-            Text("Clear")
+            Text("Clear", color = Color(0xFF9CA3AF))
         }
     }
 }
 
 @Composable
+private fun compactInput(
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    modifier: Modifier = Modifier,
+) {
+    BasicTextField(
+        value = value,
+        onValueChange = onValueChange,
+        singleLine = true,
+        textStyle = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF111827)),
+        modifier = modifier.clip(RoundedCornerShape(4.dp)).border(1.dp, Color(0xFFD1D5DB), RoundedCornerShape(4.dp)).padding(8.dp, 6.dp),
+        decorationBox = { inner ->
+            if (value.isBlank()) {
+                Text(placeholder, color = Color(0xFF9CA3AF), style = MaterialTheme.typography.bodySmall)
+            }
+            inner()
+        },
+    )
+}
+
+@Composable
 private fun messageHeaderRow() {
-    Surface(
-        tonalElevation = 2.dp,
-        shape = MaterialTheme.shapes.small,
+    Row(
+        modifier = Modifier.fillMaxWidth().background(Color(0xFFE5E7EB)).padding(horizontal = 8.dp, vertical = 6.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            headerCell("Time", 110.dp)
-            headerCell("Part", 40.dp)
-            headerCell("Offset", 70.dp)
-            headerCell("Key", 160.dp)
-            headerCell("Value", 260.dp)
-            headerCell("Headers", 60.dp)
-            headerCell("Size", 60.dp)
-        }
+        headerCell("TIME", 90.dp)
+        headerCell("P", 40.dp)
+        headerCell("OFFSET", 60.dp)
+        headerCell("KEY", 90.dp)
+        headerCell("VALUE", 420.dp)
     }
 }
 
@@ -304,8 +308,9 @@ private fun headerCell(
     Text(
         text = text,
         modifier = Modifier.width(width),
-        style = MaterialTheme.typography.labelMedium,
+        style = MaterialTheme.typography.labelSmall,
         fontWeight = FontWeight.Bold,
+        color = Color(0xFF6B7280),
     )
 }
 
@@ -315,26 +320,36 @@ private fun messageRow(
     selected: Boolean,
     onClick: () -> Unit,
 ) {
-    val background = if (selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface
-    Surface(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
-        color = background,
-        tonalElevation = if (selected) 2.dp else 0.dp,
-        shape = MaterialTheme.shapes.small,
+    val background = if (selected) Color(0xFFF3E8FF) else Color.White
+    val rowBorder = if (selected) AccentColor.copy(alpha = 0.45f) else Color(0xFFE5E7EB)
+    Row(
+        modifier = Modifier.fillMaxWidth().background(background).border(1.dp, rowBorder).clickable(onClick = onClick).padding(horizontal = 8.dp, vertical = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 7.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            cellText(formatTimestamp(message.timestamp), 110.dp)
-            cellText(message.partition.toString(), 40.dp)
-            cellText(message.offset.toString(), 70.dp)
-            cellText(previewBytes(message.key), 160.dp)
-            cellText(previewBytes(message.value), 260.dp)
-            cellText(message.headers.size.toString(), 60.dp)
-            val size = (message.key?.size ?: 0) + (message.value?.size ?: 0)
-            cellText("${size}b", 60.dp)
-        }
+        cellText(formatTimestamp(message.timestamp), 90.dp)
+        partitionCell(message.partition, 40.dp)
+        cellText(message.offset.toString(), 60.dp)
+        cellText(previewBytes(message.key), 90.dp)
+        cellText(previewBytes(message.value), 420.dp)
+    }
+}
+
+@Composable
+private fun partitionCell(
+    partition: Int,
+    width: Dp,
+) {
+    Box(
+        modifier = Modifier.width(width).background(partitionTint(partition), RoundedCornerShape(4.dp)).padding(vertical = 2.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = partition.toString(),
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.SemiBold,
+            color = Color(0xFF1F2937),
+        )
     }
 }
 
@@ -348,5 +363,8 @@ private fun cellText(
         modifier = Modifier.width(width),
         style = MaterialTheme.typography.bodySmall,
         maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        fontFamily = FontFamily.Monospace,
+        color = Color(0xFF374151),
     )
 }
