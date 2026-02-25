@@ -1,0 +1,81 @@
+name: Reusable Package Build
+
+on:
+  workflow_call:
+    inputs:
+      target_name:
+        required: true
+        type: string
+      os:
+        required: true
+        type: string
+      artifact_name:
+        required: true
+        type: string
+      artifact_path:
+        required: true
+        type: string
+      portable_archive:
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    name: Build ${{ inputs.target_name }}
+    runs-on: ${{ inputs.os }}
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle cache
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Ensure Gradle wrapper is executable
+        if: runner.os != 'Windows'
+        run: chmod +x ./gradlew
+
+      - name: Build native package
+        if: runner.os == 'Windows'
+        run: .\gradlew.bat --no-daemon :app-desktop:createDistributable :app-desktop:packageDistributionForCurrentOS
+
+      - name: Build native package
+        if: runner.os != 'Windows'
+        run: ./gradlew --no-daemon :app-desktop:createDistributable :app-desktop:packageDistributionForCurrentOS
+
+      - name: Archive portable launcher bundle (Windows)
+        if: runner.os == 'Windows' && inputs.portable_archive != ''
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path dist -Force | Out-Null
+          $appPath = Get-ChildItem "app-desktop/build/compose/binaries/main/app" | Select-Object -First 1
+          if (-not $appPath) {
+            throw "No distributable app bundle found"
+          }
+          Compress-Archive -Path $appPath.FullName -DestinationPath "dist/${{ inputs.portable_archive }}" -Force
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: ${{ inputs.artifact_path }}
+          if-no-files-found: error
+
+      - name: Upload Windows portable artifact
+        if: runner.os == 'Windows' && inputs.portable_archive != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-portable
+          path: dist/${{ inputs.portable_archive }}
+          if-no-files-found: error

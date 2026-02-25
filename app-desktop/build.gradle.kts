@@ -25,7 +25,14 @@ compose.desktop {
         nativeDistributions {
             packageName = "LightKafkaViewer"
             packageVersion = "1.0.0"
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.AppImage)
+            val osName = System.getProperty("os.name").lowercase()
+            val currentOsFormat =
+                when {
+                    osName.contains("mac") -> TargetFormat.Dmg
+                    osName.contains("win") -> TargetFormat.Msi
+                    else -> TargetFormat.AppImage
+                }
+            targetFormats(currentOsFormat)
 
             modules(
                 "java.base",

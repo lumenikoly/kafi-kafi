@@ -1,0 +1,83 @@
+name: Reusable Gradle Checks
+
+on:
+  workflow_call:
+    inputs:
+      job_name:
+        required: true
+        type: string
+      gradle_command:
+        required: true
+        type: string
+      timeout_minutes:
+        required: false
+        type: number
+        default: 25
+      verify_docker:
+        required: false
+        type: boolean
+        default: false
+      assert_integration_reports:
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    name: ${{ inputs.job_name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ inputs.timeout_minutes }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle cache
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Ensure Gradle wrapper is executable
+        run: chmod +x ./gradlew
+
+      - name: Verify Docker availability
+        if: inputs.verify_docker
+        run: docker info
+
+      - name: Run Gradle checks
+        run: ./gradlew --no-daemon ${{ inputs.gradle_command }}
+
+      - name: Assert integration tests were executed
+        if: inputs.assert_integration_reports
+        run: |
+          python - <<'PY'
+          import glob
+          import xml.etree.ElementTree as ET
+
+          report_files = glob.glob("core-kafka/build/test-results/integrationTest/TEST-*.xml")
+          if not report_files:
+              raise SystemExit("No integration test report files were generated")
+
+          total_tests = 0
+          total_skipped = 0
+          for report in report_files:
+              suite = ET.parse(report).getroot()
+              total_tests += int(suite.attrib.get("tests", 0))
+              total_skipped += int(suite.attrib.get("skipped", 0))
+
+          if total_tests == 0:
+              raise SystemExit("Integration test suite executed zero tests")
+          if total_skipped == total_tests:
+              raise SystemExit(
+                  f"All integration tests were skipped ({total_skipped}/{total_tests})"
+              )
+
+          print(f"Integration tests executed: {total_tests - total_skipped}/{total_tests}")
+          PY
