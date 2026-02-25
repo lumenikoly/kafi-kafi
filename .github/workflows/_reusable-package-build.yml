@@ -54,6 +54,47 @@ jobs:
         if: runner.os != 'Windows'
         run: ./gradlew --no-daemon :app-desktop:createDistributable :app-desktop:packageDistributionForCurrentOS
 
+      - name: Build standalone AppImage (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          APP_ROOT="app-desktop/build/compose/binaries/main/app/LightKafkaViewer"
+          if [ ! -d "$APP_ROOT" ]; then
+            echo "Expected app bundle not found at: $APP_ROOT"
+            exit 1
+          fi
+
+          APPIMAGE_DIR="app-desktop/build/compose/binaries/main/appimage"
+          APPDIR="$APPIMAGE_DIR/LightKafkaViewer.AppDir"
+          mkdir -p "$APPIMAGE_DIR"
+          rm -rf "$APPDIR"
+          mkdir -p "$APPDIR"
+
+          cp -a "$APP_ROOT" "$APPDIR/LightKafkaViewer"
+
+          printf '%s\n' '#!/usr/bin/env bash' 'HERE="$(dirname "$(readlink -f "$0")")"' 'exec "$HERE/LightKafkaViewer/bin/LightKafkaViewer" "$@"' > "$APPDIR/AppRun"
+          chmod +x "$APPDIR/AppRun"
+
+          printf '%s\n' '[Desktop Entry]' 'Type=Application' 'Name=LightKafkaViewer' 'Exec=AppRun' 'Icon=lightkafkaviewer' 'Categories=Development;' 'Terminal=false' > "$APPDIR/lightkafkaviewer.desktop"
+
+          ICON_CANDIDATES=(app-desktop/build/compose/default-resources/*/default-icon-linux.png)
+          if [ ! -f "${ICON_CANDIDATES[0]}" ]; then
+            echo "Linux icon not found in compose default resources"
+            exit 1
+          fi
+          cp "${ICON_CANDIDATES[0]}" "$APPDIR/lightkafkaviewer.png"
+
+          APPIMAGETOOL="$APPIMAGE_DIR/appimagetool.AppImage"
+          APPIMAGE_OUTPUT="$APPIMAGE_DIR/LightKafkaViewer-x86_64.AppImage"
+          curl -fsSL -o "$APPIMAGETOOL" https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+          chmod +x "$APPIMAGETOOL"
+
+          ARCH=x86_64 APPIMAGE_EXTRACT_AND_RUN=1 "$APPIMAGETOOL" "$APPDIR" "$APPIMAGE_OUTPUT"
+
+          rm -rf "$APPDIR" "$APPIMAGETOOL"
+
       - name: Archive portable launcher bundle (Windows)
         if: runner.os == 'Windows' && inputs.portable_archive != ''
         shell: pwsh
