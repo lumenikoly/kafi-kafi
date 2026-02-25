@@ -26,7 +26,6 @@ jobs:
               app-desktop/build/compose/binaries/main/appimage/*.appimage
               app-desktop/build/compose/binaries/main/app/*.AppImage
               app-desktop/build/compose/binaries/main/app/*.appimage
-              app-desktop/build/compose/binaries/main/deb/*.deb
           - name: Windows (MSI)
             os: windows-latest
             artifact_name: windows-msi
@@ -66,7 +65,6 @@ jobs:
           files: |
             dist/**/*.AppImage
             dist/**/*.appimage
-            dist/**/*.deb
             dist/**/*.msi
             dist/**/*.dmg
             dist/**/*windows-portable*.zip
