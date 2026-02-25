@@ -276,7 +276,10 @@ private fun compactInput(
         onValueChange = onValueChange,
         singleLine = true,
         textStyle = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF111827)),
-        modifier = modifier.clip(RoundedCornerShape(4.dp)).border(1.dp, Color(0xFFD1D5DB), RoundedCornerShape(4.dp)).padding(8.dp, 6.dp),
+        modifier =
+            modifier.clip(
+                RoundedCornerShape(4.dp),
+            ).border(1.dp, Color(0xFFD1D5DB), RoundedCornerShape(4.dp)).padding(8.dp, 6.dp),
         decorationBox = { inner ->
             if (value.isBlank()) {
                 Text(placeholder, color = Color(0xFF9CA3AF), style = MaterialTheme.typography.bodySmall)
@@ -323,7 +326,10 @@ private fun messageRow(
     val background = if (selected) Color(0xFFF3E8FF) else Color.White
     val rowBorder = if (selected) AccentColor.copy(alpha = 0.45f) else Color(0xFFE5E7EB)
     Row(
-        modifier = Modifier.fillMaxWidth().background(background).border(1.dp, rowBorder).clickable(onClick = onClick).padding(horizontal = 8.dp, vertical = 4.dp),
+        modifier =
+            Modifier.fillMaxWidth().background(
+                background,
+            ).border(1.dp, rowBorder).clickable(onClick = onClick).padding(horizontal = 8.dp, vertical = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -341,7 +347,10 @@ private fun partitionCell(
     width: Dp,
 ) {
     Box(
-        modifier = Modifier.width(width).background(partitionTint(partition), RoundedCornerShape(4.dp)).padding(vertical = 2.dp),
+        modifier =
+            Modifier.width(
+                width,
+            ).background(partitionTint(partition), RoundedCornerShape(4.dp)).padding(vertical = 2.dp),
         contentAlignment = Alignment.Center,
     ) {
         Text(

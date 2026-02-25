@@ -10,16 +10,15 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -73,7 +72,11 @@ internal fun inspectorPane(
                         inspectorField("PARTITION", selectedMessage.partition.toString(), Modifier.weight(1f))
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        inspectorField("TIMESTAMP", formatTimestamp(selectedMessage.timestamp, includeDate = true), Modifier.weight(1f))
+                        inspectorField(
+                            "TIMESTAMP",
+                            formatTimestamp(selectedMessage.timestamp, includeDate = true),
+                            Modifier.weight(1f),
+                        )
                         inspectorField("KEY", previewBytes(selectedMessage.key, limit = 8_192), Modifier.weight(1f))
                     }
                     val headersText =
