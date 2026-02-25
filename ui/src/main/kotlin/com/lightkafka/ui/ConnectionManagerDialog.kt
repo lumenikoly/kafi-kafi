@@ -162,7 +162,10 @@ private fun profileListPane(
                         MaterialTheme.colorScheme.surface
                     }
                 Surface(
-                    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)).clickable { onSelectProfile(profile) },
+                    modifier =
+                        Modifier.fillMaxWidth().clip(
+                            RoundedCornerShape(8.dp),
+                        ).clickable { onSelectProfile(profile) },
                     color = containerColor,
                     shape = RoundedCornerShape(8.dp),
                 ) {
@@ -171,7 +174,7 @@ private fun profileListPane(
                         Text(
                             profile.bootstrapServers.joinToString(","),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
@@ -219,12 +222,12 @@ private fun connectionEditorPane(
             Surface(
                 color = MaterialTheme.colorScheme.surfaceVariant,
                 shape = RoundedCornerShape(6.dp),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
                     state.testStatus,
                     modifier = Modifier.padding(12.dp),
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
         }

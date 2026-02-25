@@ -35,7 +35,10 @@ internal fun inspectorPane(
         modifier = modifier.background(InspectorBackgroundColor),
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().background(Color.White).border(1.dp, Color(0xFFE5E7EB)).padding(horizontal = 20.dp, vertical = 12.dp),
+            modifier =
+                Modifier.fillMaxWidth().background(
+                    Color.White,
+                ).border(1.dp, Color(0xFFE5E7EB)).padding(horizontal = 20.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
@@ -111,7 +114,10 @@ private fun inspectorField(
         )
         Text(
             value,
-            modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(6.dp)).background(Color.White).border(1.dp, Color(0xFFE5E7EB), RoundedCornerShape(6.dp)).padding(12.dp),
+            modifier =
+                Modifier.fillMaxWidth().clip(
+                    RoundedCornerShape(6.dp),
+                ).background(Color.White).border(1.dp, Color(0xFFE5E7EB), RoundedCornerShape(6.dp)).padding(12.dp),
             style = MaterialTheme.typography.bodyMedium,
             color = Color(0xFF1F2937),
             fontFamily = FontFamily.Monospace,

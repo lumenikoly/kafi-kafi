@@ -75,13 +75,20 @@ private fun templateList(
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(state.templates) { template ->
                 Surface(
-                    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)).clickable { onAction(MainUiAction.ApplyTemplate(template.id)) },
+                    modifier =
+                        Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)).clickable {
+                            onAction(MainUiAction.ApplyTemplate(template.id))
+                        },
                     color = MaterialTheme.colorScheme.surfaceVariant,
                     shape = RoundedCornerShape(8.dp),
                 ) {
                     Column(modifier = Modifier.padding(12.dp)) {
                         Text(template.name, fontWeight = FontWeight.Bold)
-                        Text(template.topic, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(
+                            template.topic,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                     }
                 }
             }

@@ -281,7 +281,9 @@ private fun compactInput(
         modifier =
             modifier.clip(
                 RoundedCornerShape(6.dp),
-            ).background(Color.White).border(1.dp, Color(0xFFD1D5DB), RoundedCornerShape(6.dp)).padding(horizontal = 12.dp, vertical = 8.dp),
+            ).background(
+                Color.White,
+            ).border(1.dp, Color(0xFFD1D5DB), RoundedCornerShape(6.dp)).padding(horizontal = 12.dp, vertical = 8.dp),
         decorationBox = { inner ->
             Box(contentAlignment = Alignment.CenterStart) {
                 if (value.isEmpty()) {
@@ -296,7 +298,10 @@ private fun compactInput(
 @Composable
 private fun messageHeaderRow() {
     Row(
-        modifier = Modifier.fillMaxWidth().background(Color(0xFFF3F4F6)).border(1.dp, Color(0xFFE5E7EB)).padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier =
+            Modifier.fillMaxWidth().background(
+                Color(0xFFF3F4F6),
+            ).border(1.dp, Color(0xFFE5E7EB)).padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         headerCell("TIME", 90.dp)
@@ -328,7 +333,16 @@ private fun messageRow(
     onClick: () -> Unit,
 ) {
     val background = if (selected) Color(0xFFF3E8FF) else Color.Transparent
-    val border = if (selected) Modifier.border(1.dp, AccentColor.copy(alpha = 0.5f), RoundedCornerShape(4.dp)) else Modifier.border(1.dp, Color.Transparent, RoundedCornerShape(4.dp))
+    val border =
+        if (selected) {
+            Modifier.border(
+                1.dp,
+                AccentColor.copy(alpha = 0.5f),
+                RoundedCornerShape(4.dp),
+            )
+        } else {
+            Modifier.border(1.dp, Color.Transparent, RoundedCornerShape(4.dp))
+        }
     Row(
         modifier =
             Modifier.fillMaxWidth()
