@@ -50,15 +50,15 @@ internal fun topBar(
 ) {
     Surface(color = HeaderBackgroundColor) {
         Row(
-            modifier = Modifier.fillMaxWidth().height(56.dp).padding(horizontal = 16.dp),
+            modifier = Modifier.fillMaxWidth().height(64.dp).padding(horizontal = 20.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Text(
-                text = "Light Kafka Viewer",
+                text = "Light Kafka",
                 style = MaterialTheme.typography.titleLarge,
                 color = AccentTextStrong,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.ExtraBold,
             )
 
             profileSwitcher(
@@ -90,7 +90,7 @@ private fun topBarLink(
     onClick: () -> Unit,
 ) {
     TextButton(onClick = onClick) {
-        Text(text, color = AccentColor)
+        Text(text, color = AccentColor, fontWeight = FontWeight.Medium)
     }
 }
 
@@ -111,7 +111,7 @@ private fun profileSwitcher(
         ) {
             Text(
                 text = activeName,
-                modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                 color = AccentColor,
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.SemiBold,
@@ -138,10 +138,10 @@ internal fun topicsPane(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.background(Color.White),
+        modifier = modifier.background(Color(0xFFF9FAFB)),
     ) {
         Box(
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
+            modifier = Modifier.fillMaxWidth().padding(12.dp),
         ) {
             compactInput(
                 value = state.topicSearchQuery,
@@ -154,23 +154,25 @@ internal fun topicsPane(
         HorizontalDivider(color = Color(0xFFE5E7EB))
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
             items(state.visibleTopics()) { topic ->
                 val selected = topic == state.selectedTopic
-                val background = if (selected) Color(0xFFE9D5FF) else Color.White
+                val background = if (selected) Color(0xFFF3E8FF) else Color.Transparent
                 val textColor = if (selected) AccentTextStrong else Color(0xFF4B5563)
                 Text(
                     text = topic,
                     modifier =
                         Modifier
                             .fillMaxWidth()
+                            .clip(RoundedCornerShape(6.dp))
                             .background(background)
                             .clickable { onAction(MainUiAction.SelectTopic(topic)) }
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                            .padding(horizontal = 12.dp, vertical = 10.dp),
                     color = textColor,
                     style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
+                    fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
                 )
             }
         }
@@ -190,16 +192,16 @@ internal fun messagesPane(
         topicsPane(
             state = state,
             onAction = onAction,
-            modifier = Modifier.width(236.dp).fillMaxHeight(),
+            modifier = Modifier.width(260.dp).fillMaxHeight(),
         )
 
         VerticalDivider(color = Color(0xFFD1D5DB))
 
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
-            Column(modifier = Modifier.weight(0.54f).fillMaxWidth().background(Color.White)) {
+            Column(modifier = Modifier.weight(0.6f).fillMaxWidth().background(Color.White)) {
                 messagesControlBar(state = state, onAction = onAction, onExport = onExport)
                 messageHeaderRow()
-                LazyColumn(modifier = Modifier.fillMaxSize().background(Color.White)) {
+                LazyColumn(modifier = Modifier.fillMaxSize().background(Color.White).padding(8.dp)) {
                     items(items = messages, key = { messageId(it) }) { message ->
                         messageRow(
                             message = message,
@@ -214,7 +216,7 @@ internal fun messagesPane(
 
             inspectorPane(
                 selectedMessage = selectedMessage,
-                modifier = Modifier.weight(0.46f).fillMaxWidth(),
+                modifier = Modifier.weight(0.4f).fillMaxWidth(),
             )
         }
     }
@@ -227,29 +229,29 @@ private fun messagesControlBar(
     onExport: (MessageExportFormat, Boolean) -> Unit,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().background(Color(0xFFF3F4F6)).padding(horizontal = 8.dp, vertical = 6.dp),
+        modifier = Modifier.fillMaxWidth().background(Color.White).padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         compactInput(
             value = state.filters.globalSearch,
             onValueChange = { onAction(MainUiAction.SetGlobalSearch(it)) },
-            placeholder = "Filter...",
-            modifier = Modifier.width(132.dp),
+            placeholder = "Filter globally...",
+            modifier = Modifier.width(180.dp),
         )
 
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(12.dp))
 
         compactInput(
             value = state.filters.partitionFilter,
             onValueChange = { onAction(MainUiAction.SetPartitionFilter(it)) },
-            placeholder = "All Partitions",
-            modifier = Modifier.width(124.dp),
+            placeholder = "Partition",
+            modifier = Modifier.width(100.dp),
         )
 
         Spacer(modifier = Modifier.weight(1f))
 
         TextButton(onClick = { onExport(MessageExportFormat.JSONL, false) }) {
-            Text("Export", color = AccentColor)
+            Text("Export JSONL", color = AccentColor)
         }
         TextButton(
             onClick = {
@@ -259,7 +261,7 @@ private fun messagesControlBar(
                 onAction(MainUiAction.SetPartitionFilter(""))
             },
         ) {
-            Text("Clear", color = Color(0xFF9CA3AF))
+            Text("Clear Filters", color = Color(0xFF6B7280))
         }
     }
 }
@@ -275,16 +277,18 @@ private fun compactInput(
         value = value,
         onValueChange = onValueChange,
         singleLine = true,
-        textStyle = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF111827)),
+        textStyle = MaterialTheme.typography.bodyMedium.copy(color = Color(0xFF111827)),
         modifier =
             modifier.clip(
-                RoundedCornerShape(4.dp),
-            ).border(1.dp, Color(0xFFD1D5DB), RoundedCornerShape(4.dp)).padding(8.dp, 6.dp),
+                RoundedCornerShape(6.dp),
+            ).background(Color.White).border(1.dp, Color(0xFFD1D5DB), RoundedCornerShape(6.dp)).padding(horizontal = 12.dp, vertical = 8.dp),
         decorationBox = { inner ->
-            if (value.isBlank()) {
-                Text(placeholder, color = Color(0xFF9CA3AF), style = MaterialTheme.typography.bodySmall)
+            Box(contentAlignment = Alignment.CenterStart) {
+                if (value.isEmpty()) {
+                    Text(placeholder, color = Color(0xFF9CA3AF), style = MaterialTheme.typography.bodyMedium)
+                }
+                inner()
             }
-            inner()
         },
     )
 }
@@ -292,14 +296,14 @@ private fun compactInput(
 @Composable
 private fun messageHeaderRow() {
     Row(
-        modifier = Modifier.fillMaxWidth().background(Color(0xFFE5E7EB)).padding(horizontal = 8.dp, vertical = 6.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.fillMaxWidth().background(Color(0xFFF3F4F6)).border(1.dp, Color(0xFFE5E7EB)).padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         headerCell("TIME", 90.dp)
-        headerCell("P", 40.dp)
+        headerCell("P", 32.dp)
         headerCell("OFFSET", 60.dp)
-        headerCell("KEY", 90.dp)
-        headerCell("VALUE", 420.dp)
+        headerCell("KEY", 120.dp)
+        headerCell("VALUE", 400.dp)
     }
 }
 
@@ -323,21 +327,25 @@ private fun messageRow(
     selected: Boolean,
     onClick: () -> Unit,
 ) {
-    val background = if (selected) Color(0xFFF3E8FF) else Color.White
-    val rowBorder = if (selected) AccentColor.copy(alpha = 0.45f) else Color(0xFFE5E7EB)
+    val background = if (selected) Color(0xFFF3E8FF) else Color.Transparent
+    val border = if (selected) Modifier.border(1.dp, AccentColor.copy(alpha = 0.5f), RoundedCornerShape(4.dp)) else Modifier.border(1.dp, Color.Transparent, RoundedCornerShape(4.dp))
     Row(
         modifier =
-            Modifier.fillMaxWidth().background(
-                background,
-            ).border(1.dp, rowBorder).clickable(onClick = onClick).padding(horizontal = 8.dp, vertical = 4.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+            Modifier.fillMaxWidth()
+                .padding(vertical = 2.dp)
+                .clip(RoundedCornerShape(4.dp))
+                .background(background)
+                .then(border)
+                .clickable(onClick = onClick)
+                .padding(horizontal = 8.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         cellText(formatTimestamp(message.timestamp), 90.dp)
-        partitionCell(message.partition, 40.dp)
+        partitionCell(message.partition, 32.dp)
         cellText(message.offset.toString(), 60.dp)
-        cellText(previewBytes(message.key), 90.dp)
-        cellText(previewBytes(message.value), 420.dp)
+        cellText(previewBytes(message.key), 120.dp)
+        cellText(previewBytes(message.value), 400.dp)
     }
 }
 
@@ -350,13 +358,13 @@ private fun partitionCell(
         modifier =
             Modifier.width(
                 width,
-            ).background(partitionTint(partition), RoundedCornerShape(4.dp)).padding(vertical = 2.dp),
+            ).background(partitionTint(partition), RoundedCornerShape(6.dp)).padding(vertical = 4.dp),
         contentAlignment = Alignment.Center,
     ) {
         Text(
             text = partition.toString(),
             style = MaterialTheme.typography.bodySmall,
-            fontWeight = FontWeight.SemiBold,
+            fontWeight = FontWeight.Bold,
             color = Color(0xFF1F2937),
         )
     }

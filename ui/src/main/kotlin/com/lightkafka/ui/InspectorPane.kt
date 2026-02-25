@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -18,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -33,7 +35,7 @@ internal fun inspectorPane(
         modifier = modifier.background(InspectorBackgroundColor),
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().background(Color.White).padding(horizontal = 16.dp, vertical = 10.dp),
+            modifier = Modifier.fillMaxWidth().background(Color.White).border(1.dp, Color(0xFFE5E7EB)).padding(horizontal = 20.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
@@ -59,19 +61,19 @@ internal fun inspectorPane(
         }
 
         Row(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.fillMaxSize().padding(20.dp),
+            horizontalArrangement = Arrangement.spacedBy(20.dp),
         ) {
             SelectionContainer {
                 Column(
                     modifier = Modifier.weight(1f).fillMaxHeight(),
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                         inspectorField("TOPIC", selectedMessage.topic, Modifier.weight(1f))
                         inspectorField("PARTITION", selectedMessage.partition.toString(), Modifier.weight(1f))
                     }
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                         inspectorField(
                             "TIMESTAMP",
                             formatTimestamp(selectedMessage.timestamp, includeDate = true),
@@ -100,7 +102,7 @@ private fun inspectorField(
     value: String,
     modifier: Modifier,
 ) {
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Text(
             label,
             style = MaterialTheme.typography.labelSmall,
@@ -109,7 +111,7 @@ private fun inspectorField(
         )
         Text(
             value,
-            modifier = Modifier.fillMaxWidth().background(Color.White).border(1.dp, Color(0xFFE5E7EB)).padding(10.dp),
+            modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(6.dp)).background(Color.White).border(1.dp, Color(0xFFE5E7EB), RoundedCornerShape(6.dp)).padding(12.dp),
             style = MaterialTheme.typography.bodyMedium,
             color = Color(0xFF1F2937),
             fontFamily = FontFamily.Monospace,
@@ -122,7 +124,7 @@ private fun valuePane(
     selectedMessage: ConsumedMessage,
     modifier: Modifier,
 ) {
-    Column(modifier = modifier.fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    Column(modifier = modifier.fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Text(
             "VALUE (JSON)",
             style = MaterialTheme.typography.labelSmall,
@@ -136,9 +138,10 @@ private fun valuePane(
                 modifier =
                     Modifier
                         .fillMaxSize()
+                        .clip(RoundedCornerShape(6.dp))
                         .background(Color.White)
-                        .border(1.dp, Color(0xFFE5E7EB))
-                        .padding(10.dp)
+                        .border(1.dp, Color(0xFFE5E7EB), RoundedCornerShape(6.dp))
+                        .padding(12.dp)
                         .verticalScroll(scrollState),
                 style = MaterialTheme.typography.bodyMedium,
                 fontFamily = FontFamily.Monospace,

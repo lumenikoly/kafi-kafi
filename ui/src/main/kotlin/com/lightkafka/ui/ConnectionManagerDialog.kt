@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -26,6 +27,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -61,7 +63,7 @@ internal fun connectionManagerDialog(
         mutableStateOf(selectedProfile?.name.orEmpty())
     }
     var bootstrapServers by remember(selectedProfileId, state.isConnectionManagerOpen) {
-        mutableStateOf(selectedProfile?.bootstrapServers?.joinToString(",").orEmpty())
+        mutableStateOf(selectedProfile?.bootstrapServers?.joinToString(",") ?: "localhost:9092")
     }
     var testStatus by remember { mutableStateOf<String?>(null) }
 
@@ -102,13 +104,13 @@ internal fun connectionManagerDialog(
                                 onAction(MainUiAction.UpsertProfile(profile))
                                 onAction(MainUiAction.SetActiveProfile(profile.id))
                                 selectedProfileId = profile.id
-                                testStatus = "Saved"
+                                testStatus = "Saved successfully."
                             },
                             onNew = {
                                 selectedProfileId = null
-                                name = ""
-                                bootstrapServers = ""
-                                testStatus = "New profile"
+                                name = "New Connection"
+                                bootstrapServers = "localhost:9092"
+                                testStatus = "New profile created. Please save."
                             },
                             onDelete = {
                                 selectedProfileId?.let { onAction(MainUiAction.DeleteProfile(it)) }
@@ -118,7 +120,7 @@ internal fun connectionManagerDialog(
                                         ?.id
                                 name = ""
                                 bootstrapServers = ""
-                                testStatus = "Deleted"
+                                testStatus = "Deleted successfully."
                             },
                             onTest = {
                                 testStatus =
@@ -143,33 +145,33 @@ private fun profileListPane(
     onSelectProfile: (ClusterProfile) -> Unit,
 ) {
     Column(
-        modifier = Modifier.width(280.dp).fillMaxHeight().padding(12.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.width(300.dp).fillMaxHeight().padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text("Profiles", style = MaterialTheme.typography.titleSmall)
+        Text("Profiles", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             items(state.profiles) { profile ->
                 val selected = profile.id == selectedProfileId
-                val color =
+                val containerColor =
                     if (selected) {
                         MaterialTheme.colorScheme.secondaryContainer
                     } else {
                         MaterialTheme.colorScheme.surface
                     }
                 Surface(
-                    modifier = Modifier.fillMaxWidth().clickable { onSelectProfile(profile) },
-                    tonalElevation = if (selected) 2.dp else 0.dp,
-                    color = color,
-                    shape = MaterialTheme.shapes.small,
+                    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)).clickable { onSelectProfile(profile) },
+                    color = containerColor,
+                    shape = RoundedCornerShape(8.dp),
                 ) {
-                    Column(modifier = Modifier.padding(8.dp)) {
-                        Text(profile.name, fontWeight = FontWeight.Medium)
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Text(profile.name, fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium)
                         Text(
                             profile.bootstrapServers.joinToString(","),
                             style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -185,14 +187,15 @@ private fun connectionEditorPane(
     actions: ConnectionEditorActions,
 ) {
     Column(
-        modifier = modifier.padding(12.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier.padding(20.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text("Connection Manager", style = MaterialTheme.typography.titleSmall)
+        Text("Connection Settings", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
         OutlinedTextField(
             value = state.name,
             onValueChange = actions.onNameChange,
             label = { Text("Profile name") },
+            placeholder = { Text("e.g. Local Cluster") },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
         )
@@ -200,24 +203,37 @@ private fun connectionEditorPane(
             value = state.bootstrapServers,
             onValueChange = actions.onBootstrapServersChange,
             label = { Text("Bootstrap servers (comma separated)") },
+            placeholder = { Text("localhost:9092") },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
         )
 
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = actions.onSave) { Text("Save") }
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.padding(top = 8.dp)) {
+            Button(onClick = actions.onSave) { Text("Save Connection") }
             TextButton(onClick = actions.onNew) { Text("New") }
             TextButton(onClick = actions.onDelete) { Text("Delete") }
             TextButton(onClick = actions.onTest) { Text("Test") }
         }
 
         if (state.testStatus != null) {
-            Text(state.testStatus, style = MaterialTheme.typography.bodySmall)
+            Surface(
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                shape = RoundedCornerShape(6.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    state.testStatus,
+                    modifier = Modifier.padding(12.dp),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
         }
 
         Spacer(modifier = Modifier.weight(1f))
 
-        TextButton(onClick = actions.onClose) { Text("Close") }
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+            TextButton(onClick = actions.onClose) { Text("Close") }
+        }
     }
 }
 

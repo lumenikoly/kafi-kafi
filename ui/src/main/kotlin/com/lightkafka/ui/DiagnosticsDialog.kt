@@ -46,15 +46,15 @@ internal fun diagnosticsDialog(
             tonalElevation = 6.dp,
         ) {
             Column(
-                modifier = Modifier.fillMaxSize().padding(12.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier.fillMaxSize().padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 Text("Diagnostics", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
 
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    diagnosticsMetricCard(label = "Consumer", value = consumerStatus)
-                    diagnosticsMetricCard(label = "Messages/sec", value = messageRate)
-                    diagnosticsMetricCard(label = "Last error", value = lastError)
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    diagnosticsMetricCard(label = "Consumer", value = consumerStatus, modifier = Modifier.weight(1f))
+                    diagnosticsMetricCard(label = "Messages/sec", value = messageRate, modifier = Modifier.weight(1f))
+                    diagnosticsMetricCard(label = "Last error", value = lastError, modifier = Modifier.weight(1f))
                 }
 
                 Text(
@@ -75,7 +75,7 @@ internal fun diagnosticsDialog(
 
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
                     items(logEntries) { entry ->
                         Surface(
@@ -86,7 +86,7 @@ internal fun diagnosticsDialog(
                                 text =
                                     "${formatTimestamp(entry.timestampEpochMillis, includeDate = true)} " +
                                         "[${entry.level}] ${entry.message}",
-                                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                                modifier = Modifier.fillMaxWidth().padding(12.dp),
                                 style = MaterialTheme.typography.bodySmall,
                             )
                         }
@@ -101,10 +101,11 @@ internal fun diagnosticsDialog(
 private fun diagnosticsMetricCard(
     label: String,
     value: String,
+    modifier: Modifier = Modifier,
 ) {
-    Card(modifier = Modifier.width(280.dp)) {
+    Card(modifier = modifier) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(10.dp),
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Text(
@@ -114,8 +115,8 @@ private fun diagnosticsMetricCard(
             )
             Text(
                 value,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
             )
         }
     }
