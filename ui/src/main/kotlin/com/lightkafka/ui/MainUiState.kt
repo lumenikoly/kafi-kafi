@@ -86,6 +86,8 @@ sealed interface MainUiAction {
     data class DeleteProfile(val profileId: String) : MainUiAction
 
     data class SetActiveProfile(val profileId: String?) : MainUiAction
+
+    data class AddMessages(val messages: List<ConsumedMessage>) : MainUiAction
 }
 
 fun reduceMainUiState(
@@ -102,6 +104,7 @@ fun reduceMainUiState(
         MainUiAction.TogglePause,
         is MainUiAction.SelectMessage,
         is MainUiAction.SetExportStatus,
+        is MainUiAction.AddMessages,
         -> reduceBrowserAction(state, action)
 
         is MainUiAction.SetProducerPanelOpen,
@@ -144,6 +147,22 @@ private fun reduceBrowserAction(
         MainUiAction.TogglePause -> state.copy(isConsumerPaused = !state.isConsumerPaused)
         is MainUiAction.SelectMessage -> state.copy(selectedMessageId = action.messageId)
         is MainUiAction.SetExportStatus -> state.copy(exportStatus = action.status)
+        is MainUiAction.AddMessages -> {
+            val seenIds = state.messages.mapTo(HashSet()) { messageId(it) }
+            val newUnique = buildList {
+                action.messages.forEach { message ->
+                    if (seenIds.add(messageId(message))) {
+                        add(message)
+                    }
+                }
+            }
+            val newTopics = newUnique.map { it.topic }.toSet() - state.topics.toSet()
+
+            state.copy(
+                messages = state.messages + newUnique,
+                topics = (state.topics + newTopics).sorted()
+            )
+        }
         else -> state
     }
 

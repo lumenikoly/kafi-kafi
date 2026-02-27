@@ -25,19 +25,29 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.lightkafka.core.kafka.DefaultKafkaAdminService
+import com.lightkafka.core.kafka.KafkaConnectionConfig
+import com.lightkafka.core.kafka.KafkaResult
+import com.lightkafka.core.kafka.TopicSummary
 import com.lightkafka.core.storage.ClusterProfile
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.UUID
 
 private data class ConnectionEditorState(
     val name: String,
     val bootstrapServers: String,
     val testStatus: String?,
+    val isTesting: Boolean,
+    val canDelete: Boolean,
 )
 
 private data class ConnectionEditorActions(
@@ -66,6 +76,8 @@ internal fun connectionManagerDialog(
         mutableStateOf(selectedProfile?.bootstrapServers?.joinToString(",") ?: "localhost:9092")
     }
     var testStatus by remember { mutableStateOf<String?>(null) }
+    var isTesting by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     Dialog(onDismissRequest = { onAction(MainUiAction.SetConnectionManagerOpen(false)) }) {
         Surface(
@@ -77,6 +89,25 @@ internal fun connectionManagerDialog(
                 profileListPane(
                     state = state,
                     selectedProfileId = selectedProfileId,
+                    onTestProfile = { profile ->
+                        scope.launch {
+                            isTesting = true
+                            testStatus = "Testing ${profile.name}..."
+                            testStatus =
+                                withContext(Dispatchers.IO) {
+                                    probeConnection(profile.bootstrapServers.joinToString(","), ::testConnectionAgainstKafka)
+                                }
+                            isTesting = false
+                        }
+                    },
+                    onDeleteProfile = { profileId ->
+                        onAction(MainUiAction.DeleteProfile(profileId))
+                        selectedProfileId = nextSelectedProfileIdAfterDelete(state.profiles, profileId)
+                        val newSelection = state.profiles.firstOrNull { it.id == selectedProfileId }
+                        name = newSelection?.name.orEmpty()
+                        bootstrapServers = newSelection?.bootstrapServers?.joinToString(",").orEmpty()
+                        testStatus = "Deleted successfully."
+                    },
                     onSelectProfile = { profile ->
                         selectedProfileId = profile.id
                         name = profile.name
@@ -93,6 +124,8 @@ internal fun connectionManagerDialog(
                             name = name,
                             bootstrapServers = bootstrapServers,
                             testStatus = testStatus,
+                            isTesting = isTesting,
+                            canDelete = selectedProfileId != null,
                         ),
                     actions =
                         ConnectionEditorActions(
@@ -113,22 +146,26 @@ internal fun connectionManagerDialog(
                                 testStatus = "New profile created. Please save."
                             },
                             onDelete = {
-                                selectedProfileId?.let { onAction(MainUiAction.DeleteProfile(it)) }
-                                selectedProfileId =
-                                    state.profiles
-                                        .firstOrNull { it.id != selectedProfileId }
-                                        ?.id
-                                name = ""
-                                bootstrapServers = ""
-                                testStatus = "Deleted successfully."
+                                val profileId = selectedProfileId
+                                if (profileId != null) {
+                                    onAction(MainUiAction.DeleteProfile(profileId))
+                                    selectedProfileId = nextSelectedProfileIdAfterDelete(state.profiles, profileId)
+                                    val newSelection = state.profiles.firstOrNull { it.id == selectedProfileId }
+                                    name = newSelection?.name.orEmpty()
+                                    bootstrapServers = newSelection?.bootstrapServers?.joinToString(",").orEmpty()
+                                    testStatus = "Deleted successfully."
+                                }
                             },
                             onTest = {
-                                testStatus =
-                                    if (bootstrapServers.isBlank()) {
-                                        "Connection test failed: bootstrap servers required"
-                                    } else {
-                                        "Connection test passed (UI stub)"
-                                    }
+                                scope.launch {
+                                    isTesting = true
+                                    testStatus = "Testing connection..."
+                                    testStatus =
+                                        withContext(Dispatchers.IO) {
+                                            probeConnection(bootstrapServers, ::testConnectionAgainstKafka)
+                                        }
+                                    isTesting = false
+                                }
                             },
                             onClose = { onAction(MainUiAction.SetConnectionManagerOpen(false)) },
                         ),
@@ -142,13 +179,24 @@ internal fun connectionManagerDialog(
 private fun profileListPane(
     state: MainUiState,
     selectedProfileId: String?,
+    onTestProfile: (ClusterProfile) -> Unit,
+    onDeleteProfile: (String) -> Unit,
     onSelectProfile: (ClusterProfile) -> Unit,
 ) {
+    val selectedProfile = state.profiles.firstOrNull { it.id == selectedProfileId }
     Column(
         modifier = Modifier.width(300.dp).fillMaxHeight().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text("Profiles", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            TextButton(onClick = { selectedProfile?.let(onTestProfile) }, enabled = selectedProfile != null) {
+                Text("Test")
+            }
+            TextButton(onClick = { selectedProfile?.let { onDeleteProfile(it.id) } }, enabled = selectedProfile != null) {
+                Text("Delete")
+            }
+        }
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(6.dp),
@@ -214,8 +262,10 @@ private fun connectionEditorPane(
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.padding(top = 8.dp)) {
             Button(onClick = actions.onSave) { Text("Save Connection") }
             TextButton(onClick = actions.onNew) { Text("New") }
-            TextButton(onClick = actions.onDelete) { Text("Delete") }
-            TextButton(onClick = actions.onTest) { Text("Test") }
+            TextButton(onClick = actions.onDelete, enabled = state.canDelete) { Text("Delete") }
+            TextButton(onClick = actions.onTest, enabled = !state.isTesting) {
+                Text(if (state.isTesting) "Testing..." else "Test")
+            }
         }
 
         if (state.testStatus != null) {
@@ -256,4 +306,13 @@ private fun toProfile(
         name = name.ifBlank { "New Profile" },
         bootstrapServers = servers,
     )
+}
+
+private suspend fun testConnectionAgainstKafka(bootstrapServers: List<String>): KafkaResult<List<TopicSummary>> {
+    val adminService = DefaultKafkaAdminService(KafkaConnectionConfig(bootstrapServers = bootstrapServers))
+    return try {
+        adminService.listTopics(includeInternal = false)
+    } finally {
+        adminService.close()
+    }
 }
