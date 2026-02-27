@@ -13,15 +13,30 @@ import org.junit.jupiter.api.Test
 class MainUiStateReducerTest {
     @Test
     fun `add messages appends unique messages and updates topics`() {
-        val state = sampleMainUiState().copy(
-            messages = listOf(message(topic = "orders", partition = 0, offset = 1, key = "k1", value = "v1")),
-            topics = listOf("orders")
-        )
+        val state =
+            sampleMainUiState().copy(
+                messages = listOf(message(topic = "orders", partition = 0, offset = 1, key = "k1", value = "v1")),
+                topics = listOf("orders"),
+            )
 
-        val updated = reduceMainUiState(state, MainUiAction.AddMessages(listOf(
-            message(topic = "orders", partition = 0, offset = 1, key = "k1", value = "v1"), // Duplicate
-            message(topic = "payments", partition = 0, offset = 2, key = "k2", value = "v2") // New message and topic
-        )))
+        val updated =
+            reduceMainUiState(
+                state,
+                MainUiAction.AddMessages(
+                    listOf(
+                        // Duplicate
+                        message(topic = "orders", partition = 0, offset = 1, key = "k1", value = "v1"),
+                        // New message and topic
+                        message(
+                            topic = "payments",
+                            partition = 0,
+                            offset = 2,
+                            key = "k2",
+                            value = "v2",
+                        ),
+                    ),
+                ),
+            )
 
         assertEquals(2, updated.messages.size)
         assertEquals(listOf("orders", "payments"), updated.topics)
@@ -29,10 +44,11 @@ class MainUiStateReducerTest {
 
     @Test
     fun `add messages ignores duplicates within same batch`() {
-        val state = sampleMainUiState().copy(
-            messages = emptyList(),
-            topics = emptyList()
-        )
+        val state =
+            sampleMainUiState().copy(
+                messages = emptyList(),
+                topics = emptyList(),
+            )
 
         val duplicate = message(topic = "orders", partition = 0, offset = 1, key = "k1", value = "v1")
         val updated = reduceMainUiState(state, MainUiAction.AddMessages(listOf(duplicate, duplicate)))

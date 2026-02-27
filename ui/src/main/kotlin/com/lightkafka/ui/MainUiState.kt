@@ -149,18 +149,19 @@ private fun reduceBrowserAction(
         is MainUiAction.SetExportStatus -> state.copy(exportStatus = action.status)
         is MainUiAction.AddMessages -> {
             val seenIds = state.messages.mapTo(HashSet()) { messageId(it) }
-            val newUnique = buildList {
-                action.messages.forEach { message ->
-                    if (seenIds.add(messageId(message))) {
-                        add(message)
+            val newUnique =
+                buildList {
+                    action.messages.forEach { message ->
+                        if (seenIds.add(messageId(message))) {
+                            add(message)
+                        }
                     }
                 }
-            }
             val newTopics = newUnique.map { it.topic }.toSet() - state.topics.toSet()
 
             state.copy(
                 messages = state.messages + newUnique,
-                topics = (state.topics + newTopics).sorted()
+                topics = (state.topics + newTopics).sorted(),
             )
         }
         else -> state

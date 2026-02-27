@@ -95,7 +95,10 @@ internal fun connectionManagerDialog(
                             testStatus = "Testing ${profile.name}..."
                             testStatus =
                                 withContext(Dispatchers.IO) {
-                                    probeConnection(profile.bootstrapServers.joinToString(","), ::testConnectionAgainstKafka)
+                                    probeConnection(
+                                        profile.bootstrapServers.joinToString(","),
+                                        ::testConnectionAgainstKafka,
+                                    )
                                 }
                             isTesting = false
                         }
@@ -193,7 +196,10 @@ private fun profileListPane(
             TextButton(onClick = { selectedProfile?.let(onTestProfile) }, enabled = selectedProfile != null) {
                 Text("Test")
             }
-            TextButton(onClick = { selectedProfile?.let { onDeleteProfile(it.id) } }, enabled = selectedProfile != null) {
+            TextButton(
+                onClick = { selectedProfile?.let { onDeleteProfile(it.id) } },
+                enabled = selectedProfile != null,
+            ) {
                 Text("Delete")
             }
         }

@@ -22,8 +22,7 @@ internal suspend fun probeConnection(
 internal fun nextSelectedProfileIdAfterDelete(
     profiles: List<com.lightkafka.core.storage.ClusterProfile>,
     deletedProfileId: String,
-): String? =
-    profiles.firstOrNull { it.id != deletedProfileId }?.id
+): String? = profiles.firstOrNull { it.id != deletedProfileId }?.id
 
 internal fun formatConnectionError(error: KafkaServiceError): String =
     when (error) {

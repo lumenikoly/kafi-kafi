@@ -14,12 +14,13 @@ class ConnectionManagerLogicTest {
     fun `probeConnection rejects blank bootstrap servers`() {
         var called = false
 
-        val message = runBlocking {
-            probeConnection("   ") {
-                called = true
-                KafkaResult.Success(emptyList<TopicSummary>())
+        val message =
+            runBlocking {
+                probeConnection("   ") {
+                    called = true
+                    KafkaResult.Success(emptyList<TopicSummary>())
+                }
             }
-        }
 
         assertEquals("Connection test failed: bootstrap servers required", message)
         assertEquals(false, called)
@@ -27,27 +28,29 @@ class ConnectionManagerLogicTest {
 
     @Test
     fun `probeConnection returns success message with topic count`() {
-        val message = runBlocking {
-            probeConnection("localhost:9092") {
-                KafkaResult.Success(emptyList<TopicSummary>())
+        val message =
+            runBlocking {
+                probeConnection("localhost:9092") {
+                    KafkaResult.Success(emptyList<TopicSummary>())
+                }
             }
-        }
 
         assertEquals("Connection test passed: broker reachable", message)
     }
 
     @Test
     fun `probeConnection returns failure reason from kafka error`() {
-        val message = runBlocking {
-            probeConnection("localhost:9092") {
-                KafkaResult.Failure(
-                    KafkaServiceError.OperationFailed(
-                        operation = "list topics",
-                        reason = "Connection refused",
-                    ),
-                )
+        val message =
+            runBlocking {
+                probeConnection("localhost:9092") {
+                    KafkaResult.Failure(
+                        KafkaServiceError.OperationFailed(
+                            operation = "list topics",
+                            reason = "Connection refused",
+                        ),
+                    )
+                }
             }
-        }
 
         assertEquals("Connection test failed: Connection refused", message)
     }

@@ -214,7 +214,7 @@ internal fun messagesPane(
 
                 LazyColumn(
                     state = listState,
-                    modifier = Modifier.fillMaxSize().background(Color.White).padding(8.dp)
+                    modifier = Modifier.fillMaxSize().background(Color.White).padding(8.dp),
                 ) {
                     items(items = messages, key = { messageId(it) }) { message ->
                         messageRow(
