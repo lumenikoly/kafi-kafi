@@ -7,6 +7,7 @@ import com.lightkafka.core.storage.SendHistoryEntry
 import com.lightkafka.core.storage.SendStatus
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
@@ -169,6 +170,65 @@ class MainUiStateReducerTest {
 
         assertTrue(diagnosticsOpen.isDiagnosticsOpen)
         assertEquals("Exported 42 messages", withStatus.exportStatus)
+    }
+
+    @Test
+    fun `add topic appends unique topic and keeps list sorted`() {
+        val state = sampleMainUiState().copy(topics = listOf("payments", "orders"))
+
+        val updated = reduceMainUiState(state, MainUiAction.AddTopic("audit.events"))
+        val unchanged = reduceMainUiState(updated, MainUiAction.AddTopic("orders"))
+
+        assertEquals(listOf("audit.events", "orders", "payments"), updated.topics)
+        assertEquals(updated.topics, unchanged.topics)
+    }
+
+    @Test
+    fun `set topics normalizes list and clears invalid selected topic`() {
+        val state = sampleMainUiState().copy(selectedTopic = "orders")
+
+        val updated =
+            reduceMainUiState(
+                state,
+                MainUiAction.SetTopics(
+                    listOf(" payments ", "orders", "", "orders"),
+                ),
+            )
+        val withoutSelected = reduceMainUiState(updated, MainUiAction.SetTopics(listOf("payments")))
+
+        assertEquals(listOf("orders", "payments"), updated.topics)
+        assertEquals("orders", updated.selectedTopic)
+        assertNull(withoutSelected.selectedTopic)
+    }
+
+    @Test
+    fun `clear messages drops list and selected message`() {
+        val state = sampleMainUiState().copy(
+            messages = listOf(message(topic = "orders", partition = 0, offset = 10, key = "k", value = "v")),
+            selectedMessageId = "orders:0:10",
+        )
+
+        val updated = reduceMainUiState(state, MainUiAction.ClearMessages)
+
+        assertTrue(updated.messages.isEmpty())
+        assertNull(updated.selectedMessageId)
+    }
+
+    @Test
+    fun `confirm topic delete only closes dialog and topic is removed on success action`() {
+        val state = sampleMainUiState().copy(
+            topics = listOf("orders", "payments"),
+            selectedTopic = "orders",
+            topicToDelete = "orders",
+        )
+
+        val afterConfirm = reduceMainUiState(state, MainUiAction.ConfirmDeleteTopic("orders"))
+        val afterSuccess = reduceMainUiState(afterConfirm, MainUiAction.RemoveTopic("orders"))
+
+        assertEquals(listOf("orders", "payments"), afterConfirm.topics)
+        assertNull(afterConfirm.topicToDelete)
+        assertEquals(listOf("payments"), afterSuccess.topics)
+        assertNull(afterSuccess.selectedTopic)
     }
 
     private fun profile(

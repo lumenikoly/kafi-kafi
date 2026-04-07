@@ -1,0 +1,176 @@
+# Diktat configuration file
+# See: https://github.com/saveourtool/diktat
+#
+# NOTE: Diktat 2.0.0 has compatibility issues with Kotlin 2.2.21.
+# This configuration is kept for future use when diktat becomes compatible.
+# Currently using spotless with ktlint instead.
+
+# Common configuration
+- name: DIKTAT_COMMON
+  enabled: true
+  configuration:
+    # Disable specific chapters if needed (e.g., "1, 2" to disable chapters 1 and 2)
+    disabledChapters: ""
+    # Domain for package naming validation
+    domainName: "com.lightkafka"
+
+# Chapter 1: Naming
+- name: IDENTIFIER_LENGTH
+  enabled: true
+  configuration:
+    minIdentifierLength: 2
+    maxIdentifierLength: 64
+
+- name: PACKAGE_NAME_INCORRECT_PREFIX
+  enabled: true
+
+- name: PACKAGE_NAME_INCORRECT_CASE
+  enabled: true
+
+- name: CLASS_NAME_INCORRECT
+  enabled: true
+
+- name: CONSTANT_UPPERCASE
+  enabled: true
+
+- name: VARIABLE_NAME_INCORRECT_FORMAT
+  enabled: true
+
+- name: FUNCTION_NAME_INCORRECT_CASE
+  enabled: true
+
+- name: FUNCTION_BOOLEAN_PREFIX
+  enabled: true
+
+# Chapter 2: Comments
+- name: MISSING_KDOC_TOP_LEVEL
+  enabled: true
+
+- name: MISSING_KDOC_CLASS_ELEMENTS
+  enabled: true
+
+- name: MISSING_KDOC_ON_FUNCTION
+  enabled: true
+
+- name: KDOC_TRIVIAL_KDOC_ON_FUNCTION
+  enabled: false
+
+- name: HEADER_MISSING_OR_WRONG_COPYRIGHT
+  enabled: false
+  configuration:
+    isCopyrightMandatory: false
+    copyrightText: ""
+
+# Chapter 3: Formatting
+- name: FILE_IS_TOO_LONG
+  enabled: true
+  configuration:
+    maxSize: 2000
+
+- name: FILE_CONTAINS_ONLY_COMMENTS
+  enabled: true
+
+- name: FILE_INCORRECT_BLOCKS_ORDER
+  enabled: true
+
+- name: FILE_NO_BLANK_LINE_BETWEEN_BLOCKS
+  enabled: true
+
+- name: FILE_UNORDERED_IMPORTS
+  enabled: true
+
+- name: FILE_WILDCARD_IMPORTS
+  enabled: true
+  configuration:
+    allowedWildcards: ""
+
+- name: BRACES_BLOCK_STRUCTURE_ERROR
+  enabled: true
+
+- name: WRONG_INDENTATION
+  enabled: true
+
+- name: EMPTY_BLOCK_STRUCTURE_ERROR
+  enabled: true
+
+- name: LONG_LINE
+  enabled: true
+  configuration:
+    lineLength: 120
+
+- name: TRAILING_COMMA
+  enabled: true
+
+# Chapter 4: Variables and Types
+- name: FLOAT_IN_ACCURATE_CALCULATIONS
+  enabled: true
+
+- name: SAY_NO_TO_VAR
+  enabled: true
+
+- name: SMART_CAST_NEEDED
+  enabled: true
+
+- name: GENERIC_VARIABLE_WRONG_DECLARATION
+  enabled: true
+
+# Chapter 5: Functions
+- name: TOO_LONG_FUNCTION
+  enabled: true
+  configuration:
+    maxFunctionLength: 30
+
+- name: TOO_MANY_PARAMETERS
+  enabled: true
+  configuration:
+    maxParameters: 5
+
+- name: NESTED_BLOCK
+  enabled: true
+  configuration:
+    maxNestedBlockCount: 4
+
+- name: AVOID_NESTED_FUNCTIONS
+  enabled: true
+
+- name: LAMBDA_IS_NOT_LAST_PARAMETER
+  enabled: true
+
+- name: TOO_MANY_LINES_IN_LAMBDA
+  enabled: true
+  configuration:
+    maxLambdaLength: 10
+
+# Chapter 6: Classes, Interfaces, and Extension Functions
+- name: SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY
+  enabled: true
+
+- name: DATA_CLASS_SHOULD_BE_USED
+  enabled: true
+
+- name: USE_DATA_CLASS
+  enabled: true
+
+- name: EMPTY_PRIMARY_CONSTRUCTOR
+  enabled: true
+
+- name: NO_REDUNDANT_INIT_BLOCK
+  enabled: true
+
+- name: ABSTRACT_CLASS_WITHOUT_ABSTRACT_METHOD
+  enabled: true
+
+- name: CUSTOM_GETTERS_SETTERS
+  enabled: true
+
+- name: TRIVIAL_GETTERS_SETTERS
+  enabled: true
+
+- name: COMPACT_OBJECT_INITIALIZATION
+  enabled: true
+
+- name: EXTENSION_FUNCTION_SHOULD_NOT_BE_USED_ON_SUSPEND_FUNCTION
+  enabled: true
+
+- name: RUN_BLOCKING_INSIDE_ASYNC
+  enabled: true

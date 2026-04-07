@@ -11,6 +11,7 @@ dependencies {
     implementation(compose.runtime)
     implementation(compose.foundation)
     implementation(compose.material3)
+    implementation(compose.materialIconsExtended)
 
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)

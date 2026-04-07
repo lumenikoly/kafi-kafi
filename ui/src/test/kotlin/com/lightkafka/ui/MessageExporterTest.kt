@@ -25,7 +25,11 @@ class MessageExporterTest {
         val lines = Files.readAllLines(result.file)
 
         assertEquals(2, result.exportedCount)
-        assertTrue(result.file.fileName.toString().endsWith(".jsonl"))
+        assertTrue(
+            result.file.fileName
+                .toString()
+                .endsWith(".jsonl"),
+        )
         assertEquals(2, lines.size)
         assertTrue(lines.first().contains("\"offset\":10"))
         assertTrue(lines.first().contains("line\\nitem"))
@@ -41,7 +45,11 @@ class MessageExporterTest {
         val lines = Files.readAllLines(result.file)
 
         assertEquals(1, result.exportedCount)
-        assertTrue(result.file.fileName.toString().endsWith(".csv"))
+        assertTrue(
+            result.file.fileName
+                .toString()
+                .endsWith(".csv"),
+        )
         assertEquals("timestamp,topic,partition,offset,key,value,headers,sizeBytes", lines.first())
         assertEquals(2, lines.size)
         assertTrue(lines[1].contains("\"key,1\""))

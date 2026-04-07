@@ -98,13 +98,15 @@ class KafkaServicesIntegrationTest {
 
                 val messageEvent =
                     withTimeout(20_000L) {
-                        consumerService.startSession(
-                            ConsumerSessionRequest(
-                                topic = topicName,
-                                startPosition = ConsumerStartPosition.Earliest,
-                                pollTimeout = Duration.ofMillis(200),
-                            ),
-                        ).filterIsInstance<ConsumerEvent.MessageReceived>().first()
+                        consumerService
+                            .startSession(
+                                ConsumerSessionRequest(
+                                    topic = topicName,
+                                    startPosition = ConsumerStartPosition.Earliest,
+                                    pollTimeout = Duration.ofMillis(200),
+                                ),
+                            ).filterIsInstance<ConsumerEvent.MessageReceived>()
+                            .first()
                     }
 
                 assertEquals(topicName, messageEvent.message.topic)
@@ -145,15 +147,16 @@ class KafkaServicesIntegrationTest {
                 val events = Channel<ConsumerEvent>(capacity = Channel.UNLIMITED)
                 val collector =
                     launch {
-                        consumerService.startSession(
-                            ConsumerSessionRequest(
-                                topic = topicName,
-                                startPosition = ConsumerStartPosition.Latest,
-                                pollTimeout = Duration.ofMillis(200),
-                            ),
-                        ).collect { event ->
-                            events.send(event)
-                        }
+                        consumerService
+                            .startSession(
+                                ConsumerSessionRequest(
+                                    topic = topicName,
+                                    startPosition = ConsumerStartPosition.Latest,
+                                    pollTimeout = Duration.ofMillis(200),
+                                ),
+                            ).collect { event ->
+                                events.send(event)
+                            }
                     }
 
                 awaitEvent<ConsumerEvent.Stats>(events)
@@ -193,9 +196,11 @@ class KafkaServicesIntegrationTest {
             }
 
         Admin.create(properties).use { adminClient ->
-            adminClient.createTopics(
-                listOf(NewTopic(topicName, partitions, 1.toShort())),
-            ).all().get(30, TimeUnit.SECONDS)
+            adminClient
+                .createTopics(
+                    listOf(NewTopic(topicName, partitions, 1.toShort())),
+                ).all()
+                .get(30, TimeUnit.SECONDS)
         }
     }
 

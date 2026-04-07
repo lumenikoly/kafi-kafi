@@ -5,6 +5,7 @@ import org.gradle.api.tasks.compile.JavaCompile
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import org.gradle.api.tasks.wrapper.Wrapper
+import com.diffplug.gradle.spotless.SpotlessExtension
 
 plugins {
     alias(libs.plugins.kotlin.jvm) apply false
@@ -12,10 +13,12 @@ plugins {
     alias(libs.plugins.compose) apply false
     alias(libs.plugins.ktlint) apply false
     alias(libs.plugins.detekt) apply false
+    alias(libs.plugins.spotless) apply false
     alias(libs.plugins.kotlin.serialization) apply false
 }
 
 val detektVersion = libs.versions.detekt.get()
+val ktlintVersion = "1.3.1"
 
 subprojects {
     val isJava25OrNewer = JavaVersion.current().majorVersion.toInt() >= 25
@@ -30,6 +33,7 @@ subprojects {
 
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
     apply(plugin = "io.gitlab.arturbosch.detekt")
+    apply(plugin = "com.diffplug.spotless")
 
     plugins.withId("org.jetbrains.kotlin.jvm") {
         extensions.configure<JavaPluginExtension> {
@@ -68,6 +72,32 @@ subprojects {
         basePath = rootDir.absolutePath
     }
 
+    extensions.configure<SpotlessExtension> {
+        kotlin {
+            target("src/**/*.kt")
+            ktlint(ktlintVersion)
+                .editorConfigOverride(
+                    mapOf(
+                        "indent_size" to "4",
+                        "continuation_indent_size" to "4",
+                        "max_line_length" to "120",
+                        "ktlint_code_style" to "ktlint_official",
+                    ),
+                )
+        }
+        kotlinGradle {
+            target("*.gradle.kts")
+            ktlint(ktlintVersion)
+                .editorConfigOverride(
+                    mapOf(
+                        "indent_size" to "4",
+                        "continuation_indent_size" to "4",
+                        "max_line_length" to "120",
+                    ),
+                )
+        }
+    }
+
     tasks.withType<Detekt>().configureEach {
         if (isJava25OrNewer) {
             enabled = false
@@ -90,6 +120,18 @@ tasks.register("detektAll") {
     group = "verification"
     description = "Runs detekt for all subprojects."
     dependsOn(subprojects.map { project -> "${project.path}:detekt" })
+}
+
+tasks.register("spotlessCheckAll") {
+    group = "verification"
+    description = "Runs spotless check for all subprojects."
+    dependsOn(subprojects.map { project -> "${project.path}:spotlessCheck" })
+}
+
+tasks.register("spotlessApplyAll") {
+    group = "formatting"
+    description = "Applies spotless formatting for all subprojects."
+    dependsOn(subprojects.map { project -> "${project.path}:spotlessApply" })
 }
 
 tasks.wrapper {

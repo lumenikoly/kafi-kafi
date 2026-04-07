@@ -42,5 +42,7 @@ class VersionedJsonFileStoreTest {
     }
 
     @Serializable
-    private data class MigrationTarget(val message: String)
+    private data class MigrationTarget(
+        val message: String,
+    )
 }

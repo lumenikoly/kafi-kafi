@@ -9,6 +9,26 @@ interface KafkaAdminService {
 
     suspend fun describeTopic(topicName: String): KafkaResult<TopicDescription>
 
+    suspend fun describeCluster(): KafkaResult<ClusterDescription?>
+
+    suspend fun createTopic(request: CreateTopicRequest): KafkaResult<Unit>
+
+    suspend fun deleteTopic(topicName: String): KafkaResult<Unit>
+
+    suspend fun getTopicConfig(topicName: String): KafkaResult<TopicConfig>
+
+    suspend fun updateTopicConfig(
+        topicName: String,
+        configs: Map<String, String>,
+    ): KafkaResult<Unit>
+
+    suspend fun addPartitions(
+        topicName: String,
+        newPartitionCount: Int,
+    ): KafkaResult<Unit>
+
+    suspend fun getPartitionDetails(topicName: String): KafkaResult<List<PartitionDetail>>
+
     suspend fun close()
 }
 
@@ -30,6 +50,54 @@ class DefaultKafkaAdminService(
         runWithKafkaResult(operation = "describe topic", timeout = operationTimeout) {
             val adminClient = client()
             adminClient.describeTopic(topicName)
+        }
+
+    override suspend fun describeCluster(): KafkaResult<ClusterDescription?> =
+        runWithKafkaResult(operation = "describe cluster", timeout = operationTimeout) {
+            val adminClient = client()
+            adminClient.describeCluster()
+        }
+
+    override suspend fun createTopic(request: CreateTopicRequest): KafkaResult<Unit> =
+        runWithKafkaResult(operation = "create topic", timeout = operationTimeout) {
+            val adminClient = client()
+            adminClient.createTopic(request)
+        }
+
+    override suspend fun deleteTopic(topicName: String): KafkaResult<Unit> =
+        runWithKafkaResult(operation = "delete topic", timeout = operationTimeout) {
+            val adminClient = client()
+            adminClient.deleteTopic(topicName)
+        }
+
+    override suspend fun getTopicConfig(topicName: String): KafkaResult<TopicConfig> =
+        runWithKafkaResult(operation = "get topic config", timeout = operationTimeout) {
+            val adminClient = client()
+            adminClient.getTopicConfig(topicName)
+        }
+
+    override suspend fun updateTopicConfig(
+        topicName: String,
+        configs: Map<String, String>,
+    ): KafkaResult<Unit> =
+        runWithKafkaResult(operation = "update topic config", timeout = operationTimeout) {
+            val adminClient = client()
+            adminClient.updateTopicConfig(topicName, configs)
+        }
+
+    override suspend fun addPartitions(
+        topicName: String,
+        newPartitionCount: Int,
+    ): KafkaResult<Unit> =
+        runWithKafkaResult(operation = "add partitions", timeout = operationTimeout) {
+            val adminClient = client()
+            adminClient.addPartitions(topicName, newPartitionCount)
+        }
+
+    override suspend fun getPartitionDetails(topicName: String): KafkaResult<List<PartitionDetail>> =
+        runWithKafkaResult(operation = "get partition details", timeout = operationTimeout) {
+            val adminClient = client()
+            adminClient.getPartitionDetails(topicName)
         }
 
     override suspend fun close() {

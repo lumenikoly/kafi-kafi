@@ -5,7 +5,9 @@ import java.nio.file.Path
 class JsonStorageStore(
     storageFile: Path,
     private val secretStore: SecretStore,
-) : ProfileStore, TemplateStore, HistoryStore {
+) : ProfileStore,
+    TemplateStore,
+    HistoryStore {
     private val snapshotStore =
         VersionedJsonFileStore(
             file = storageFile,

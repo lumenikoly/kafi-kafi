@@ -47,13 +47,15 @@ class DefaultKafkaConsumerServiceTest {
                 )
 
             val messageEvent =
-                service.startSession(
-                    ConsumerSessionRequest(
-                        topic = "orders",
-                        startPosition = ConsumerStartPosition.Earliest,
-                        pollTimeout = Duration.ofMillis(25),
-                    ),
-                ).filterIsInstance<ConsumerEvent.MessageReceived>().first()
+                service
+                    .startSession(
+                        ConsumerSessionRequest(
+                            topic = "orders",
+                            startPosition = ConsumerStartPosition.Earliest,
+                            pollTimeout = Duration.ofMillis(25),
+                        ),
+                    ).filterIsInstance<ConsumerEvent.MessageReceived>()
+                    .first()
 
             assertEquals(10, messageEvent.message.offset)
             assertEquals("orders", messageEvent.message.topic)
@@ -98,9 +100,11 @@ class DefaultKafkaConsumerServiceTest {
                 )
 
             val statsEvent =
-                service.startSession(
-                    ConsumerSessionRequest(topic = "orders", pollTimeout = Duration.ofMillis(25)),
-                ).filterIsInstance<ConsumerEvent.Stats>().first()
+                service
+                    .startSession(
+                        ConsumerSessionRequest(topic = "orders", pollTimeout = Duration.ofMillis(25)),
+                    ).filterIsInstance<ConsumerEvent.Stats>()
+                    .first()
 
             assertEquals(2, statsEvent.polledRecords)
         }
@@ -135,14 +139,16 @@ class DefaultKafkaConsumerServiceTest {
                     operationTimeout = Duration.ofSeconds(1),
                 )
 
-            service.startSession(
-                ConsumerSessionRequest(
-                    topic = "orders",
-                    partitions = setOf(1, 2),
-                    startPosition = ConsumerStartPosition.SpecificOffsets(mapOf(1 to 10, 2 to 20)),
-                    pollTimeout = Duration.ofMillis(25),
-                ),
-            ).filterIsInstance<ConsumerEvent.MessageReceived>().first()
+            service
+                .startSession(
+                    ConsumerSessionRequest(
+                        topic = "orders",
+                        partitions = setOf(1, 2),
+                        startPosition = ConsumerStartPosition.SpecificOffsets(mapOf(1 to 10, 2 to 20)),
+                        pollTimeout = Duration.ofMillis(25),
+                    ),
+                ).filterIsInstance<ConsumerEvent.MessageReceived>()
+                .first()
 
             assertEquals(mapOf(1 to 10L, 2 to 20L), fakeClient.seekOffsets)
         }
@@ -166,12 +172,13 @@ class DefaultKafkaConsumerServiceTest {
 
             val collector =
                 backgroundScope.launch {
-                    service.startSession(
-                        ConsumerSessionRequest(
-                            topic = "orders",
-                            pollTimeout = Duration.ofMillis(10),
-                        ),
-                    ).collect {}
+                    service
+                        .startSession(
+                            ConsumerSessionRequest(
+                                topic = "orders",
+                                pollTimeout = Duration.ofMillis(10),
+                            ),
+                        ).collect {}
                 }
             runCurrent()
 
