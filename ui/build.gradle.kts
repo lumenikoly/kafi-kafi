@@ -12,6 +12,7 @@ dependencies {
     implementation(compose.foundation)
     implementation(compose.material3)
     implementation(compose.materialIconsExtended)
+    implementation(libs.coroutines.core)
 
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
