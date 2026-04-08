@@ -14,6 +14,8 @@ dependencies {
     implementation(compose.materialIconsExtended)
     implementation(libs.coroutines.core)
 
+    implementation(libs.kotlinx.serialization.json)
+
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.coroutines.test)
