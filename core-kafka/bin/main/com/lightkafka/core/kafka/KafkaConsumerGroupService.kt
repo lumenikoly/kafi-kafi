@@ -47,8 +47,11 @@ class DefaultKafkaConsumerGroupService(
         runWithKafkaResult(operation = "reset consumer group offsets", timeout = operationTimeout) {
             require(groupId.isNotBlank()) { "Consumer group ID is required" }
             require(topic.isNotBlank()) { "Topic is required" }
-            if (spec is OffsetResetSpec.Timestamp) {
-                require(spec.timestampEpochMillis >= 0) { "Timestamp must be zero or greater" }
+            when (spec) {
+                is OffsetResetSpec.Timestamp ->
+                    require(spec.timestampEpochMillis >= 0) { "Timestamp must be zero or greater" }
+                is OffsetResetSpec.Offset -> require(spec.offset >= 0) { "Offset must be zero or greater" }
+                OffsetResetSpec.Earliest, OffsetResetSpec.Latest -> Unit
             }
             client().resetOffsets(groupId, topic, spec)
         }

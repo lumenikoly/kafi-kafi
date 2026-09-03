@@ -1,6 +1,8 @@
 package com.lightkafka.ui.connection
 
+import com.lightkafka.core.storage.AppSettings
 import com.lightkafka.core.storage.ProfileStore
+import com.lightkafka.core.storage.SettingsStore
 import com.lightkafka.ui.shell.ShellAction
 import com.lightkafka.ui.shell.Store
 import kotlinx.coroutines.CoroutineScope
@@ -24,6 +26,8 @@ data class EditorActions(
  */
 data class ConnectionPageContext(
     val profileStore: ProfileStore,
+    val settingsStore: SettingsStore,
+    val settingsStateFlow: MutableStateFlow<AppSettings>,
     val connectionStateFlow: MutableStateFlow<AppConnectionState>,
     val shellStore: Store<*, ShellAction>,
     val coroutineScope: CoroutineScope,

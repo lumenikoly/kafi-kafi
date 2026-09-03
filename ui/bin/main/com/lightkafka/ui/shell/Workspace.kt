@@ -12,8 +12,8 @@ import com.lightkafka.ui.infra.AppBackgroundColor
 @Composable
 fun Workspace(
     activeTab: TabInstance?,
+    connectionPageCtx: ConnectionPageContext,
     modifier: Modifier = Modifier,
-    connectionPageCtx: ConnectionPageContext? = null,
 ) {
     Column(
         modifier = modifier.fillMaxSize().background(AppBackgroundColor),

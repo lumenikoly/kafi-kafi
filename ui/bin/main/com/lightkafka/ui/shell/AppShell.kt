@@ -16,8 +16,8 @@ import com.lightkafka.ui.infra.KraftLauncher
 @Composable
 fun AppShell(
     store: Store<ShellState, ShellAction>,
+    connectionPageCtx: ConnectionPageContext,
     modifier: Modifier = Modifier,
-    connectionPageCtx: ConnectionPageContext? = null,
     kraftLauncher: KraftLauncher? = null,
 ) {
     val state by store.state.collectAsState()

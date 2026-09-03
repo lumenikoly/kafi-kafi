@@ -3,15 +3,14 @@ package com.lightkafka.ui.connection
 import com.lightkafka.core.storage.EncryptedFileSecretStore
 import com.lightkafka.core.storage.JsonStorageStore
 import com.lightkafka.core.storage.Pbkdf2AesKeyProvider
-import com.lightkafka.core.storage.ProfileStore
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
 
 /**
- * Creates a [ProfileStore] backed by encrypted file storage at
+ * Creates the application storage backed by encrypted file storage at
  * the OS-appropriate data directory (`~/.lightkafka/`).
  */
-fun createProfileStore(): ProfileStore {
+fun createStorageStore(): JsonStorageStore {
     val baseDir = Path.of(System.getProperty("user.home"), ".lightkafka")
     baseDir.createDirectories()
 

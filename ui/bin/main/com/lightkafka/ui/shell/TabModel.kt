@@ -16,7 +16,7 @@ enum class TabType {
  * A single open tab in the workspace.
  *
  * @param id     stable unique identifier (used for deduplication and selection)
- * @param type   determines which placeholder composable renders
+ * @param type   determines which workspace content renders
  * @param title  displayed in the tab bar
  */
 data class TabInstance(

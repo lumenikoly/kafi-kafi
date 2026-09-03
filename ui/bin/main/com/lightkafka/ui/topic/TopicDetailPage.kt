@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lightkafka.core.kafka.KafkaResult
 import com.lightkafka.core.kafka.TopicDescription
+import com.lightkafka.core.storage.AppSettings
 import com.lightkafka.ui.connection.AppConnectionState
 import com.lightkafka.ui.connection.ConnectionState
 import com.lightkafka.ui.infra.AccentViolet
@@ -61,6 +62,7 @@ private enum class TopicSubTab(
 @Composable
 fun TopicDetailPage(
     connectionStateFlow: MutableStateFlow<AppConnectionState>,
+    settingsStateFlow: MutableStateFlow<AppSettings>,
     shellStore: Store<*, ShellAction>,
     topicName: String,
     modifier: Modifier = Modifier,
@@ -112,6 +114,7 @@ fun TopicDetailPage(
                 topicDescription = topicDescription!!,
                 adminService = adminService,
                 connectionStateFlow = connectionStateFlow,
+                settingsStateFlow = settingsStateFlow,
                 selectedSubTab = selectedSubTab,
                 onSubTabSelected = { selectedSubTab = it },
                 modifier = modifier,
@@ -127,6 +130,7 @@ private fun TopicDetailContent(
     topicDescription: TopicDescription,
     adminService: com.lightkafka.core.kafka.KafkaAdminService,
     connectionStateFlow: MutableStateFlow<AppConnectionState>,
+    settingsStateFlow: MutableStateFlow<AppSettings>,
     selectedSubTab: TopicSubTab,
     onSubTabSelected: (TopicSubTab) -> Unit,
     modifier: Modifier = Modifier,
@@ -165,6 +169,7 @@ private fun TopicDetailContent(
             TopicSubTab.MESSAGES ->
                 TopicMessagesTab(
                     connectionStateFlow = connectionStateFlow,
+                    settingsStateFlow = settingsStateFlow,
                     topicName = topicDescription.name,
                     partitionCount = topicDescription.partitions.size,
                 )

@@ -1,5 +1,6 @@
 package com.lightkafka.ui.topic
 
+import com.lightkafka.core.kafka.ConsumedMessage
 import com.lightkafka.core.kafka.ConsumerStartPosition
 import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -7,6 +8,17 @@ import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 
 class TopicMessagesTabTest {
+    @Test
+    fun `message buffer keeps newest messages within configured limit`() {
+        val messages = mutableListOf<ConsumedMessage>()
+
+        repeat(105) { offset -> appendMessage(messages, consumedMessage(offset.toLong()), limit = 100) }
+
+        assertEquals(95, messages.size)
+        assertEquals(10L, messages.first().offset)
+        assertEquals(104L, messages.last().offset)
+    }
+
     @Test
     fun `specific offset covers every selected partition`() {
         val request =
@@ -45,4 +57,15 @@ class TopicMessagesTabTest {
         assertArrayEquals("{\"paid\":true}".encodeToByteArray(), message.value)
         assertEquals(2, message.partition)
     }
+
+    private fun consumedMessage(offset: Long) =
+        ConsumedMessage(
+            topic = "orders",
+            partition = 0,
+            offset = offset,
+            timestamp = 0,
+            key = null,
+            value = byteArrayOf(),
+            headers = emptyMap(),
+        )
 }

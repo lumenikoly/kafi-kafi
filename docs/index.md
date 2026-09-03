@@ -1,33 +1,27 @@
 # Light Kafka
 
-Light Kafka is a desktop client for connecting to Kafka clusters, inspecting topics, reading messages, and producing records. The application is built with Kotlin and Compose Desktop. It stores connection profiles locally and keeps their SASL and SSL password fields in a separate encrypted store.
+Light Kafka is a desktop client for inspecting and operating Apache Kafka clusters. It connects directly from the desktop application to Kafka and keeps connection profiles on the local computer; no Light Kafka server is required.
 
-## Start here
+## What you can do
 
-- [Run the application and connect](guides/getting-started.md)
-- [Read and produce messages](guides/messages.md)
-- [Inspect and manage consumer groups](guides/consumer-groups.md)
-- [Understand the architecture](architecture/overview.md)
+- Connect with `PLAINTEXT`, `SSL`, `SASL_PLAINTEXT`, or `SASL_SSL` profiles.
+- Review cluster metadata, brokers, topics, partitions, replicas, and topic configuration.
+- Search and create topics.
+- Read, pause, filter, and inspect messages from a chosen position or partition.
+- Produce records with an optional key and partition.
+- Review consumer group membership and lag, reset offsets, and delete inactive groups.
+- Start a local single-node Kafka KRaft container for development on systems with a POSIX-compatible shell.
 
-## Core capabilities
+## Get started
 
-- Connection profiles for `PLAINTEXT`, `SSL`, `SASL_PLAINTEXT`, and `SASL_SSL`; SASL mechanism choices are `PLAIN`, `SCRAM_SHA_256`, `SCRAM_SHA_512`, and `OAUTHBEARER`.
-- Cluster, broker, and topic views, including topic creation, partition details, and read-only topic configuration.
-- Message consumption from the latest offset, earliest offset, a specific offset, or a timestamp.
-- In-memory filtering by partition, key, and value.
-- Record production to a broker-selected or explicit partition.
-- Consumer group search, state, members, partition lag, offset reset, and deletion.
-- Local settings for the default consumer start position and in-memory message limit.
-- A local single-node Kafka KRaft launcher that uses Podman or Docker.
+1. [Install or run Light Kafka and connect to a cluster](guides/getting-started.md).
+2. [Browse topics, read messages, and produce records](guides/messages.md).
+3. [Inspect and manage consumer groups](guides/consumer-groups.md).
 
-## Validate the documentation
+For the system boundary and module responsibilities, see the [architecture overview](architecture/overview.md).
 
-```bash
-toudocu check ./docs --strict
-```
+## Local data and credentials
 
-Start the local documentation portal with:
+Light Kafka stores profiles and settings in `~/.lightkafka/storage.json`. SASL and SSL password fields are encrypted with AES-GCM and stored separately in `~/.lightkafka/secrets/secrets.json`. The application derives the encryption key from the local username, operating system name, home-directory path, and a random salt.
 
-```bash
-toudocu serve ./docs
-```
+These files are local application storage, not a shared credential vault. Protect the user account and home directory on any computer that runs Light Kafka.

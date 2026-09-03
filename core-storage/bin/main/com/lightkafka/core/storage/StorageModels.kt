@@ -13,7 +13,10 @@ data class AppSettings(
     val defaultConsumerStartPosition: DefaultConsumerStartPosition = DefaultConsumerStartPosition.LATEST,
     val messageBufferLimit: Int = DEFAULT_MESSAGE_BUFFER_LIMIT,
 ) {
-    fun normalized(): AppSettings = copy(messageBufferLimit = messageBufferLimit.coerceIn(MIN_MESSAGE_BUFFER_LIMIT, MAX_MESSAGE_BUFFER_LIMIT))
+    fun normalized(): AppSettings =
+        copy(
+            messageBufferLimit = messageBufferLimit.coerceIn(MIN_MESSAGE_BUFFER_LIMIT, MAX_MESSAGE_BUFFER_LIMIT),
+        )
 
     companion object {
         const val DEFAULT_MESSAGE_BUFFER_LIMIT = 10_000

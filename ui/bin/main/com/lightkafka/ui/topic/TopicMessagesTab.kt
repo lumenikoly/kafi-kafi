@@ -64,6 +64,8 @@ import com.lightkafka.core.kafka.KafkaConsumerService
 import com.lightkafka.core.kafka.KafkaResult
 import com.lightkafka.core.kafka.ProducerMessage
 import com.lightkafka.core.kafka.ProducerSendResult
+import com.lightkafka.core.storage.AppSettings
+import com.lightkafka.core.storage.DefaultConsumerStartPosition
 import com.lightkafka.ui.connection.AppConnectionState
 import com.lightkafka.ui.connection.toKafkaConnectionConfig
 import com.lightkafka.ui.infra.AccentViolet
@@ -85,7 +87,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-private const val MAX_BUFFERED_MESSAGES = 10_000
 private const val MESSAGE_TRIM_BATCH = 1_000
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -165,31 +166,28 @@ internal data class MessagesTabCallbacks(
 @Composable
 fun TopicMessagesTab(
     connectionStateFlow: MutableStateFlow<AppConnectionState>,
+    settingsStateFlow: MutableStateFlow<AppSettings>,
     topicName: String,
     partitionCount: Int,
     modifier: Modifier = Modifier,
 ) {
     val connectionState by connectionStateFlow.collectAsState()
+    val settings by settingsStateFlow.collectAsState()
     val profile = connectionState.activeProfile
     var consumer by remember { mutableStateOf<KafkaConsumerService?>(null) }
     var sessionState by remember { mutableStateOf(ConsumerSessionState()) }
     val messages = remember { mutableStateListOf<ConsumedMessage>() }
     var startKey by remember { mutableStateOf(0) }
-    var positionState by remember { mutableStateOf(StartPositionState()) }
+    var positionState by
+        remember(topicName) {
+            mutableStateOf(StartPositionState(option = settings.defaultConsumerStartPosition.toStartPositionOption()))
+        }
     var filterState by remember { mutableStateOf(MessageFilterState()) }
     var expandedMessageId by remember { mutableStateOf<MessageId?>(null) }
     var composerState by remember { mutableStateOf(MessageComposerState()) }
     val scope = rememberCoroutineScope()
     val producer = remember(profile?.id) { profile?.let { DefaultKafkaProducerService(it.toKafkaConnectionConfig()) } }
-
-    LaunchedEffect(producer) {
-        try {
-            awaitCancellation()
-        } finally {
-            withContext(NonCancellable) { producer?.close() }
-        }
-    }
-
+    CloseProducerOnDispose(producer)
     val callbacks =
         MessagesTabCallbacks(
             onPositionChanged = { positionState = it },
@@ -212,21 +210,19 @@ fun TopicMessagesTab(
                 sessionState = if (it.isRunning) it.copy(isPaused = sessionState.isPaused) else it
             },
             onMessageReceived = {
-                // ponytail: bounded UI buffer; add paging when users need more than 10k live records.
-                if (messages.size >= MAX_BUFFERED_MESSAGES) {
-                    messages.subList(0, MESSAGE_TRIM_BATCH).clear()
-                }
-                messages.add(it)
+                appendMessage(messages, it, settings.messageBufferLimit)
             },
             onComposerChanged = { composerState = it },
             onSend = {
-                val error = validateMessage(composerState, partitionCount, producer != null)
+                val producerService = producer
+                val error = validateMessage(composerState, partitionCount, producerService != null)
                 if (error != null) {
                     composerState = composerState.copy(status = SendStatus.Error(error))
                 } else {
                     scope.launch {
                         composerState = composerState.copy(isSending = true, status = null)
-                        when (val result = producer!!.send(buildProducerMessage(topicName, composerState))) {
+                        val message = buildProducerMessage(topicName, composerState)
+                        when (val result = checkNotNull(producerService).send(message)) {
                             is KafkaResult.Success ->
                                 composerState =
                                     composerState.copy(
@@ -270,6 +266,34 @@ fun TopicMessagesTab(
         callbacks = callbacks,
         modifier = modifier,
     )
+}
+
+@Suppress("ktlint:standard:function-naming")
+@Composable
+private fun CloseProducerOnDispose(producer: DefaultKafkaProducerService?) {
+    LaunchedEffect(producer) {
+        try {
+            awaitCancellation()
+        } finally {
+            withContext(NonCancellable) { producer?.close() }
+        }
+    }
+}
+
+private fun DefaultConsumerStartPosition.toStartPositionOption(): StartPositionOption =
+    when (this) {
+        DefaultConsumerStartPosition.LATEST -> StartPositionOption.LATEST
+        DefaultConsumerStartPosition.EARLIEST -> StartPositionOption.EARLIEST
+    }
+
+internal fun appendMessage(
+    messages: MutableList<ConsumedMessage>,
+    message: ConsumedMessage,
+    limit: Int,
+) {
+    val trimCount = maxOf(messages.size - limit + 1, minOf(MESSAGE_TRIM_BATCH, maxOf(1, limit / 10)))
+    if (messages.size >= limit) messages.subList(0, trimCount).clear()
+    messages.add(message)
 }
 
 private fun handlePause(

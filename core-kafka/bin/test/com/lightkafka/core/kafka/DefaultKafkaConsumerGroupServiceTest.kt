@@ -8,6 +8,11 @@ import java.time.Duration
 
 class DefaultKafkaConsumerGroupServiceTest {
     @Test
+    fun `timestamp reset falls back to end when no later record exists`() {
+        assertEquals(73L, resolveTimestampResetOffset(timestampOffset = -1, endOffset = 73))
+    }
+
+    @Test
     fun `delegates consumer group operations`() =
         runTest {
             val summary = ConsumerGroupSummary("orders-reader", "STABLE", 2, 1)

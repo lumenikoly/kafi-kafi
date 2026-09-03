@@ -544,7 +544,8 @@ private class DefaultKafkaConsumerGroupClient(
                                 },
                             ).all().get()
                         topicPartitions.associateWith { tp ->
-                            org.apache.kafka.clients.consumer.OffsetAndMetadata(beginningOffsets[tp]?.offset() ?: 0L)
+                            val offset = checkNotNull(beginningOffsets[tp]) { "No earliest offset for $tp" }.offset()
+                            org.apache.kafka.clients.consumer.OffsetAndMetadata(offset)
                         }
                     }
                     is OffsetResetSpec.Latest -> {
@@ -555,7 +556,8 @@ private class DefaultKafkaConsumerGroupClient(
                                 },
                             ).all().get()
                         topicPartitions.associateWith { tp ->
-                            org.apache.kafka.clients.consumer.OffsetAndMetadata(endOffsets[tp]?.offset() ?: 0L)
+                            val offset = checkNotNull(endOffsets[tp]) { "No latest offset for $tp" }.offset()
+                            org.apache.kafka.clients.consumer.OffsetAndMetadata(offset)
                         }
                     }
                     is OffsetResetSpec.Timestamp -> {
@@ -572,10 +574,18 @@ private class DefaultKafkaConsumerGroupClient(
                                 },
                             ).all().get()
                         topicPartitions.associateWith { tp ->
-                            val offset = timestampOffsets[tp]?.offset() ?: endOffsets[tp]?.offset() ?: 0L
+                            val offset =
+                                resolveTimestampResetOffset(
+                                    timestampOffsets[tp]?.offset(),
+                                    endOffsets[tp]?.offset(),
+                                )
                             org.apache.kafka.clients.consumer.OffsetAndMetadata(offset)
                         }
                     }
+                    is OffsetResetSpec.Offset ->
+                        topicPartitions.associateWith {
+                            org.apache.kafka.clients.consumer.OffsetAndMetadata(spec.offset)
+                        }
                 }
 
             admin.alterConsumerGroupOffsets(groupId, offsetsMap).all().get()
@@ -594,6 +604,13 @@ private class DefaultKafkaConsumerGroupClient(
         }
     }
 }
+
+internal fun resolveTimestampResetOffset(
+    timestampOffset: Long?,
+    endOffset: Long?,
+): Long =
+    timestampOffset?.takeIf { it >= 0 }
+        ?: requireNotNull(endOffset) { "No end offset available" }
 
 private fun KafkaConnectionConfig.toProperties(): Properties =
     Properties().apply {

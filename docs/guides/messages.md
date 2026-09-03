@@ -1,36 +1,51 @@
-# Read and produce messages
+# Browse topics and work with messages
 
-## Open a topic
+The **Topics** workspace lets you find topics, inspect their metadata, consume retained records, and produce new records.
 
-1. Connect to a cluster.
-2. Open `Topics`.
-3. Double-click the topic, then open its `Messages` tab.
+## Find or create a topic
+
+After connecting to a cluster, open **Topics**. Search by name or enable **Hide internal** to exclude topics that Kafka identifies as internal.
+
+To create a topic:
+
+1. Click **Create Topic**.
+2. Enter the topic name, partition count, and replication factor.
+3. Add optional Kafka topic configuration name-value pairs.
+4. Click **Create Topic**.
+
+The cluster validates the request and your permissions. Light Kafka shows broker errors without changing the form so you can correct the values and retry.
+
+## Inspect a topic
+
+Double-click a topic to open it. The detail view contains three tabs:
+
+- **Messages** reads and produces records.
+- **Partitions** shows leaders, replicas, and in-sync replicas.
+- **Config** shows the topic configuration and marks default, read-only, and sensitive values. Configuration is read-only.
 
 ## Read messages
 
-Choose a start position:
+Choose a start position before starting the consumer:
 
-- `Latest` reads records appended after the session starts.
-- `Earliest` reads from the beginning of the retained log.
-- `Specific Offset` uses the same offset for every selected partition.
-- `Timestamp` starts at the first available record at or after the supplied Unix timestamp in milliseconds.
+- **Latest** reads records appended after the session starts.
+- **Earliest** reads from the beginning of the retained log.
+- **Specific Offset** applies one non-negative offset to the selected partitions.
+- **Timestamp** starts at the first available record at or after the supplied Unix timestamp in milliseconds.
 
-`Partition = All` reads every partition in the topic. Select a single partition before clicking `Start` if you want to limit the session. The start position and partition selector remain locked while the session is active; click `Stop` before changing them.
+Select **All** to read every partition or choose one partition, then click **Start**. The position and partition controls remain locked while the session is active. **Pause** suspends polling, **Resume** continues it, and **Stop** closes the consumer session.
 
-`Pause` suspends polling without closing the session, `Resume` continues it, and `Stop` closes the consumer. Key and value filters apply to the in-memory messages immediately and do not restart the consumer. The UI retains at most the configured number of recent messages.
+The key and value filters search the messages already held in memory and do not restart Kafka consumption. Click a message to inspect its headers and complete JSON or text value. Valid JSON is formatted for readability; non-UTF-8 payloads are identified as binary and shown only by size.
 
-Open `Settings` to choose whether new message sessions start at `Latest` or `Earliest` and to set the in-memory limit from 100 to 100,000 messages. Saving changes updates the local settings file; the start-position default applies when you open a new topic message session.
+Light Kafka keeps only the most recent messages up to the configured memory limit. Open **Settings** to select the default start position and set a limit from 100 to 100,000 messages. These defaults apply when you open a new topic message session.
 
 ## Produce a message
 
-1. Click `Produce`.
+1. Click **Produce** in the **Messages** tab.
 2. Enter an optional key.
-3. Leave `Partition (auto)` empty to let Kafka select a partition, or enter an existing partition number.
-4. Enter text or JSON in `Value`.
-5. Click `Send message`.
+3. Leave **Partition (auto)** empty to let Kafka choose a partition, or enter an existing partition number.
+4. Enter the text or JSON value.
+5. Click **Send message**.
 
-After the broker acknowledges the record, the composer shows the actual partition and offset. An empty key is sent as `null`; an empty value is sent as a zero-byte array.
+After Kafka acknowledges the record, Light Kafka shows its partition and offset. An empty key is sent as `null`; an empty value is sent as a zero-byte value.
 
-## Recover from errors
-
-Connection, polling, and production failures appear next to the affected action. Polling retries after the session's poll interval. To retry a failed production attempt, correct the input or restore the connection, then click `Send message` again.
+Connection, polling, and production errors appear beside the affected action. Polling retries after the consumer poll interval. To retry production, correct the input or restore the connection and click **Send message** again.
