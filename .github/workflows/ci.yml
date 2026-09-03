@@ -19,7 +19,7 @@ jobs:
     uses: ./.github/workflows/_reusable-gradle-checks.yml
     with:
       job_name: Quality + Unit Tests
-      gradle_command: ktlintCheck test
+      gradle_command: ktlintCheck detektAll test
       timeout_minutes: 25
 
   kafka-integration-tests:

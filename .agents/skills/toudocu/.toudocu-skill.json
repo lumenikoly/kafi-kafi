@@ -1,0 +1,292 @@
+{
+  "schemaVersion": 1,
+  "managedBy": "toudocu",
+  "skillId": "toudocu",
+  "skillVersion": "0.0.7",
+  "cliVersion": "0.0.7",
+  "agent": "codex",
+  "scope": "project",
+  "bundleChecksum": "cbe7869a1dc73e680a02cdf6335e0986616209404caa7fb75f8b7cfcb2b24d2a",
+  "files": [
+    {
+      "path": "SKILL.md",
+      "sha256": "1d445b0f4d2766740fc89145c65e6c75f85b54163a06ca35c40cd2c9504cfbdb"
+    },
+    {
+      "path": "agents/openai.yaml",
+      "sha256": "086e2c395730950047422e3e7b721cc9735a72f19d822cb2e8d702feeb0a5df9"
+    },
+    {
+      "path": "assets/locale-packs.md",
+      "sha256": "8625d1f59d5c179662fc078556ee7c0485b94543f4dcb979be5ae404e687883b"
+    },
+    {
+      "path": "assets/project-guidance/en.md",
+      "sha256": "d1b8409a2fafac27d7deb9aa91d08661bb5551781e66419897f65ee49806d3be"
+    },
+    {
+      "path": "assets/templates/en/architecture-detail.md",
+      "sha256": "499871837c3979d09382e7de9a59b15e09eb267e187bca05f68b5df5bf690607"
+    },
+    {
+      "path": "assets/templates/en/architecture-overview.md",
+      "sha256": "c6b7c96b0d749a89e2e2f65f2a79e130b9accc143f832dc489d1ba65bb271bc8"
+    },
+    {
+      "path": "assets/templates/en/contract.md",
+      "sha256": "6e2c89d95ae92c40f1df7c068a975ae5be8458ddd37235f1d10e959d25bbbc12"
+    },
+    {
+      "path": "assets/templates/en/decision.md",
+      "sha256": "ed1c1549d2ba821cff4833ba23c39221da303fd20daff52d4bce0e484a2f89f2"
+    },
+    {
+      "path": "assets/templates/en/document.md",
+      "sha256": "636c45a2aea8c93fcebb1d2bdcda1f191eacddfc5da2e351951503cb361d4ddd"
+    },
+    {
+      "path": "assets/templates/en/flow.md",
+      "sha256": "ba65965c657f3fc38ea15002eaf51f8fed8401ee1e9aa6deb1e0add73222146c"
+    },
+    {
+      "path": "assets/templates/en/guide.md",
+      "sha256": "b6102ab026b315e505785c3c892a4edb3fe87add60e499c380ecf07a2160b03a"
+    },
+    {
+      "path": "assets/templates/en/ideas.md",
+      "sha256": "afdf59a3f8d2535f851ebe125c23c8c6ff2c064187b6c88587720d1152a2aa01"
+    },
+    {
+      "path": "assets/templates/en/index.md",
+      "sha256": "376febbbdc54fee1d6ea30e664820e8b48ec43af7cff38a6714274aa313e82f7"
+    },
+    {
+      "path": "assets/templates/en/module.md",
+      "sha256": "2f5c98984ea52c0bc3f5a79c1862ae05051ba8945d80d0d06e39e11a76bc21c6"
+    },
+    {
+      "path": "assets/templates/en/notes.md",
+      "sha256": "f5a2b450a749f6331f1d8b41aaa4fc9aeb6e54c95d9fa03fb3c5582a84457716"
+    },
+    {
+      "path": "assets/templates/en/quality-index.md",
+      "sha256": "0caf0bb6255b15166d196b4245aa71704857588146f43565f9db39770abea40e"
+    },
+    {
+      "path": "assets/templates/en/reference.md",
+      "sha256": "05013abe2bf9e2a78df0d606b24528ed0fc4cc9c243c4405f4f8829807db60c9"
+    },
+    {
+      "path": "assets/templates/en/risks.md",
+      "sha256": "020770d412a3e4d2d4c29b2a0ddbfb269127825fb0cd1e37a80c5a524a4d6897"
+    },
+    {
+      "path": "assets/templates/en/roadmap.md",
+      "sha256": "695a4abc6da55f408d1b6c3a826e58d3a70780d1d20d6392639a54248e5b6e55"
+    },
+    {
+      "path": "assets/templates/en/runbook.md",
+      "sha256": "17a7b6ded597059b39a32364f983310c558ab9b9a0977e49230f8b76f9e4cc09"
+    },
+    {
+      "path": "assets/templates/en/runbooks-index.md",
+      "sha256": "a1d167b6e0f911d5f2beb76e975357d43063ea15d4fcf066be70a8a8faaea03e"
+    },
+    {
+      "path": "assets/templates/en/screen.md",
+      "sha256": "7ae4f4e27af1755b4b87f530f09e9fd4678c63f30ba3dd00b9a977095a7f7455"
+    },
+    {
+      "path": "assets/templates/en/standard.md",
+      "sha256": "1fbb7c80c52707d1a56a39a46ec832e8f955a1b2770348b51c12c10388feafd4"
+    },
+    {
+      "path": "assets/templates/en/status.md",
+      "sha256": "7484f6e2026b12c8d1f7841f62e61e614b300367003b4e1bdaf08c9af084fc4e"
+    },
+    {
+      "path": "assets/templates/en/use-case.md",
+      "sha256": "ca1bd26015e4135e3f5af754d7dfb6cf08998405800af8e193f58d376bc3867e"
+    },
+    {
+      "path": "assets/templates/en/work-draft.md",
+      "sha256": "78b0e4a4eb0e4453d957a9d0890baff8753e87b131e3ee4f1c661754d94d34a8"
+    },
+    {
+      "path": "assets/templates/en/work-ready-bug.md",
+      "sha256": "017d2a2bf083403c260ccc3b0e1da34baa319fff64aa6c029184f58dffe20f93"
+    },
+    {
+      "path": "assets/templates/en/work-ready-feature.md",
+      "sha256": "8a4e8f5ab55fe4a60d3b739dd4ad5e5eeee4f07e1e4d6b1c8c2f45b0b3d9b714"
+    },
+    {
+      "path": "assets/templates/en/work-ready-technical.md",
+      "sha256": "d95e364338725492fdeca4bfe37bf6a305364dce40db15f5a29fd0b1f49d229d"
+    },
+    {
+      "path": "assets/templates/ru/architecture-detail.md",
+      "sha256": "8b1d958ab9ba08a762b7282acd6355547ab61b3d234c7b451bc92af6dff6320f"
+    },
+    {
+      "path": "assets/templates/ru/architecture-overview.md",
+      "sha256": "53c56c5573db65abe31f9aa3a5bdfead21cc9c88e6d7269482837a0f8c48d4b7"
+    },
+    {
+      "path": "assets/templates/ru/contract.md",
+      "sha256": "f7aa742d2ab34ab2ec332d618d4fb17e13752625d51c6e588fbbd6713f1f62e8"
+    },
+    {
+      "path": "assets/templates/ru/decision.md",
+      "sha256": "4880a4b39d2f9436481ed048fa7653d79a6cc77beb7827071e31b5eb6f5ed2bd"
+    },
+    {
+      "path": "assets/templates/ru/document.md",
+      "sha256": "636c45a2aea8c93fcebb1d2bdcda1f191eacddfc5da2e351951503cb361d4ddd"
+    },
+    {
+      "path": "assets/templates/ru/flow.md",
+      "sha256": "4286bed9b2297e2341abaea62bfa3c7157e3aed59911118d7bf1f2d58020d43c"
+    },
+    {
+      "path": "assets/templates/ru/guide.md",
+      "sha256": "6013a41cc1eb7dad45e9d500e6dc9cc87a51af157de62c0419b60cbea7a04ca1"
+    },
+    {
+      "path": "assets/templates/ru/ideas.md",
+      "sha256": "86abe59eb9f901f62b8f780791515379a1a6ae1dc99f7803ae1c3786290f1610"
+    },
+    {
+      "path": "assets/templates/ru/index.md",
+      "sha256": "429d220fa5cb3068432ca71eb60b904f2716c5ac46757e58f0e3cb0e151b9055"
+    },
+    {
+      "path": "assets/templates/ru/module.md",
+      "sha256": "a3e20c52b6158ee2112b17d6e3f3b442c4322f5f34fc9318733496754c2a2b1d"
+    },
+    {
+      "path": "assets/templates/ru/notes.md",
+      "sha256": "e0f3504d82cf0354f3b51bd3828f58847cd295b31e6c882f788c0f2369850046"
+    },
+    {
+      "path": "assets/templates/ru/quality-index.md",
+      "sha256": "8dc717ed3ebfd1d81f88b42d0a64f6e3a13670222e3d58479e16ef96d2684903"
+    },
+    {
+      "path": "assets/templates/ru/reference.md",
+      "sha256": "62474e5ed64558ea9ea171ee3b87018d7f9c4ea32c44dc0310ff70b073849103"
+    },
+    {
+      "path": "assets/templates/ru/risks.md",
+      "sha256": "f1f1682fd8df9a6f8b4a9e12d57660e4c64f17dc7b30131911d165462889f1f3"
+    },
+    {
+      "path": "assets/templates/ru/roadmap.md",
+      "sha256": "774377c99744ec969f51bf7377076869da6cbf3ba074cb9062ee8403653560b8"
+    },
+    {
+      "path": "assets/templates/ru/runbook.md",
+      "sha256": "15f9bf5ff77c36d0635a088ffdf5033c1986172c990481bf5a672ea8339520e6"
+    },
+    {
+      "path": "assets/templates/ru/runbooks-index.md",
+      "sha256": "282e63660713f3d996286da3f74ca3f2a5d7b65603ede34d8fef5978f3eaf6e2"
+    },
+    {
+      "path": "assets/templates/ru/screen.md",
+      "sha256": "ebae4091351b29fc13074672ea4378bea4bbb39e621c921ed3a58fb68590745b"
+    },
+    {
+      "path": "assets/templates/ru/standard.md",
+      "sha256": "091763b9bab55a31b14cae798fa4174daf26605f3030aa3225628f3ef58921ef"
+    },
+    {
+      "path": "assets/templates/ru/status.md",
+      "sha256": "d289cea6f08a078ce5c005925916a278beb38997fbc1ccf4c3e2afc2a0fb8fc0"
+    },
+    {
+      "path": "assets/templates/ru/use-case.md",
+      "sha256": "bc8537f3d2c1f5dc9ad1224fc710ff0de06912b98ceeed2c214277819adb019d"
+    },
+    {
+      "path": "assets/templates/ru/work-draft.md",
+      "sha256": "fa474e320468ca2a862f0e20f6482033cf335422f6ad1a3bab6e0e11a34c39e1"
+    },
+    {
+      "path": "assets/templates/ru/work-ready-bug.md",
+      "sha256": "506a5dddf6223380e0c93d112e22b39e77186b85cb8d93815aa4d43061517bba"
+    },
+    {
+      "path": "assets/templates/ru/work-ready-feature.md",
+      "sha256": "8f230fcd9f372b00660381ae4c3e20461e50d3f1cd79c56520eaaf25c4c12959"
+    },
+    {
+      "path": "assets/templates/ru/work-ready-technical.md",
+      "sha256": "29e633d368a8d23d453eddb4bfe9101b37b4258b77b48b1fe1f6bb4118fc309c"
+    },
+    {
+      "path": "evals/routing-and-writing.md",
+      "sha256": "27d23a2870ae75cbe48e3b99298cb06354aec420715263e8b8d6db82872a9b4e"
+    },
+    {
+      "path": "evals/trigger-prompts.csv",
+      "sha256": "ef3acbd7a95d8f4416545cb9b3506474b8cbe755dab18dc4542baa4d418f01f2"
+    },
+    {
+      "path": "references/agent-feedback.md",
+      "sha256": "9773b932f347323766c97279db348cb777f37183280b8fd730d3bf0e26140ad0"
+    },
+    {
+      "path": "references/architecture-gate.md",
+      "sha256": "c857246505e0eb1ba45e51b40cbc3fafe5103ffbb75c803300e305929deaa9b4"
+    },
+    {
+      "path": "references/clarify.md",
+      "sha256": "d67d4b1ad1db5b9f20f1a6458ca9dd0c9b53fb5c51cc6004038f64a953f38766"
+    },
+    {
+      "path": "references/document-model.md",
+      "sha256": "05f4fe92732a04fd0eb1f6eeef769ac91ce0d8da84ed2c7c4b28ebcf94bbba22"
+    },
+    {
+      "path": "references/init.md",
+      "sha256": "0818b4a06f5bb44fb70f6149258f339f4029a3897d5191e6f8db0aab5208f9e0"
+    },
+    {
+      "path": "references/migrations/v1-to-v2.md",
+      "sha256": "0d4321a8960ddc930a863751fd7bc8ec42b690d64fdcb685d026663307728253"
+    },
+    {
+      "path": "references/migrations/v2-to-v3.md",
+      "sha256": "30db3587ed1bd207d8dc7cf1e5130d908f59748205c2befa93585b238636433e"
+    },
+    {
+      "path": "references/refresh.md",
+      "sha256": "976fe9972fca95c97c1b2459668521e5aae3ebce8b4b684589e9fb8a70217606"
+    },
+    {
+      "path": "references/screen-model.md",
+      "sha256": "8064f546ae32c1a5469f07da67e6a81282752a344c5551b8d17210a7a4d4d8c5"
+    },
+    {
+      "path": "references/semantic-gate.md",
+      "sha256": "6a6b70c5614b731354f271afe08dd50c17c20f5306940f63996bcd2d9010d3a4"
+    },
+    {
+      "path": "references/translate.md",
+      "sha256": "91fe2f9d7a7130f833b02accd79b21620ec47308ebd27a95209d863c53e621c8"
+    },
+    {
+      "path": "references/work-item-model.md",
+      "sha256": "4811364c7410fc6feb881b42e267a9ab4c4c86d26c4ac1b89fde0cc3821c0cd7"
+    },
+    {
+      "path": "references/workflows.md",
+      "sha256": "29811becbc0f5d02b0a2f7283507ce88be45f74e6c93bc4ef6d7aaa5ae6cd05b"
+    },
+    {
+      "path": "references/writing-quality.md",
+      "sha256": "603f8cb9fd14747d37b27409b468b05dde97bd3e09f130f4b50ab12aed58bee7"
+    }
+  ]
+}

@@ -1,8 +1,6 @@
-import io.gitlab.arturbosch.detekt.Detekt
-import io.gitlab.arturbosch.detekt.extensions.DetektExtension
+import dev.detekt.gradle.Detekt
+import dev.detekt.gradle.extensions.DetektExtension
 import org.gradle.api.plugins.JavaPluginExtension
-import org.gradle.api.tasks.compile.JavaCompile
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import org.gradle.api.tasks.wrapper.Wrapper
 import com.diffplug.gradle.spotless.SpotlessExtension
@@ -19,35 +17,21 @@ plugins {
 
 val detektVersion = libs.versions.detekt.get()
 val ktlintVersion = "1.3.1"
+val currentJvm = JavaVersion.current().majorVersion.toInt()
 
 subprojects {
-    val isJava25OrNewer = JavaVersion.current().majorVersion.toInt() >= 25
-    val detektJdkHome =
-        System.getenv("SDKMAN_CANDIDATES_DIR")
-            ?.let { candidatesDir ->
-                file("$candidatesDir/java")
-                    .takeIf { it.exists() }
-                    ?.listFiles()
-                    ?.firstOrNull { candidate -> candidate.isDirectory && candidate.name.startsWith("21.") }
-            }
-
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
-    apply(plugin = "io.gitlab.arturbosch.detekt")
+    apply(plugin = "dev.detekt")
     apply(plugin = "com.diffplug.spotless")
 
     plugins.withId("org.jetbrains.kotlin.jvm") {
         extensions.configure<JavaPluginExtension> {
-            sourceCompatibility = JavaVersion.VERSION_17
-            targetCompatibility = JavaVersion.VERSION_17
-        }
-
-        tasks.withType<JavaCompile>().configureEach {
-            options.release.set(17)
+            toolchain.languageVersion.set(JavaLanguageVersion.of(currentJvm))
         }
 
         extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension> {
+            jvmToolchain(currentJvm)
             compilerOptions {
-                jvmTarget.set(JvmTarget.JVM_17)
                 freeCompilerArgs.add("-Xjsr305=strict")
             }
         }
@@ -64,12 +48,12 @@ subprojects {
     }
 
     extensions.configure<DetektExtension> {
-        toolVersion = detektVersion
+        toolVersion.set(detektVersion)
         buildUponDefaultConfig = true
         allRules = false
         parallel = true
         config.setFrom(rootProject.file("config/detekt/detekt.yml"))
-        basePath = rootDir.absolutePath
+        basePath.set(rootDir)
     }
 
     extensions.configure<SpotlessExtension> {
@@ -99,19 +83,11 @@ subprojects {
     }
 
     tasks.withType<Detekt>().configureEach {
-        if (isJava25OrNewer) {
-            enabled = false
-        }
-        jvmTarget = "17"
-        if (detektJdkHome != null) {
-            jdkHome = detektJdkHome
-        }
         reports {
             html.required.set(true)
-            xml.required.set(true)
+            checkstyle.required.set(true)
             sarif.required.set(true)
-            txt.required.set(false)
-            md.required.set(false)
+            markdown.required.set(false)
         }
     }
 }

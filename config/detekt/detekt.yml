@@ -1,6 +1,3 @@
-build:
-  maxIssues: 0
-
 config:
   validation: true
   warningsAsErrors: false
@@ -11,18 +8,15 @@ processors:
 console-reports:
   active: true
 
-output-reports:
-  active: true
-
 complexity:
   LongMethod:
-    threshold: 100
+    allowedLines: 100
   LongParameterList:
-    constructorThreshold: 10
-    functionThreshold: 8
+    allowedConstructorParameters: 10
+    allowedFunctionParameters: 8
   TooManyFunctions:
-    thresholdInClasses: 15
-    thresholdInInterfaces: 15
+    allowedFunctionsPerClass: 15
+    allowedFunctionsPerInterface: 15
 
 exceptions:
   SwallowedException:

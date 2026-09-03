@@ -100,8 +100,12 @@ data class ConsumerGroupDetail(
 
 sealed interface OffsetResetSpec {
     data object Earliest : OffsetResetSpec
+
     data object Latest : OffsetResetSpec
+
     data class Timestamp(val timestampEpochMillis: Long) : OffsetResetSpec
+
+    data class Offset(val offset: Long) : OffsetResetSpec
 }
 
 data class TopicPartitionDescription(

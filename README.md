@@ -4,15 +4,8 @@ Desktop Kafka client built with Kotlin and Compose Multiplatform.
 
 ## Prerequisites
 
-- Java 25 (SDKMAN candidate: `25.0.2-librca`)
+- JDK 25
 - Gradle 9.3.1
-
-If you use SDKMAN, this repo includes `.sdkmanrc` so you can run:
-
-```bash
-sdk env install
-sdk env
-```
 
 ## Modules
 
@@ -20,6 +13,15 @@ sdk env
 - `core-storage` - local persistence contracts and models
 - `ui` - shared Compose Desktop UI components
 - `app-desktop` - desktop entrypoint and packaging configuration
+
+## Documentation
+
+Project documentation lives in [`docs/`](docs/index.md) and is validated by Toudocu:
+
+```bash
+toudocu check ./docs --strict
+toudocu serve ./docs
+```
 
 ## Common commands
 
@@ -51,7 +53,7 @@ Use:
 ## GitHub workflows
 
 - CI workflow: `.github/workflows/ci.yml`
-  - Runs `ktlintCheck` and unit tests on pushes/PRs
+  - Runs `ktlintCheck`, `detektAll`, and unit tests on pushes/PRs
   - Runs Kafka Testcontainers integration tests in a dedicated job
 - Release workflow: `.github/workflows/release.yml`
   - Triggered on tags matching `v*`

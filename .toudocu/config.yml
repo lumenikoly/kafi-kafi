@@ -1,0 +1,29 @@
+documentationVersion: 3
+project:
+  defaultLocale: en
+locales:
+  en:
+    root: docs
+    sections:
+      architecture: Architecture
+      modules: Modules
+      use-cases: Use Cases
+      flows: Processes
+      screens: Screens
+      decisions: Architecture Decisions
+      contracts: Contracts
+      quality: Quality Standards
+      runbooks: Runbooks
+      reference: Reference
+      work: Work Items
+      drafts: Drafts
+      guides: Guides
+site:
+  title: Light Kafka
+  theme: terminal
+  colorScheme: dark
+  accent: blue
+  density: compact
+  contentWidth: wide
+  hero:
+    enabled: false

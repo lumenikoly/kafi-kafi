@@ -5,7 +5,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import org.apache.kafka.clients.admin.Admin
 import org.apache.kafka.clients.admin.AlterConfigOp
-import org.apache.kafka.clients.admin.Config
+import org.apache.kafka.clients.admin.ListConsumerGroupOffsetsSpec
 import org.apache.kafka.clients.admin.ListTopicsOptions
 import org.apache.kafka.clients.admin.NewPartitions
 import org.apache.kafka.clients.admin.NewTopic
@@ -437,82 +437,87 @@ private class DefaultKafkaConsumerGroupClient(
     override suspend fun listGroups(): List<ConsumerGroupSummary> =
         withContext(Dispatchers.IO) {
             val listings = admin.listConsumerGroups().all().get()
+            if (listings.isEmpty()) return@withContext emptyList()
+
+            val groupIds = listings.map { it.groupId() }
+            val descriptions = admin.describeConsumerGroups(groupIds).all().get()
+            val offsets =
+                admin
+                    .listConsumerGroupOffsets(groupIds.associateWith { ListConsumerGroupOffsetsSpec() })
+                    .all()
+                    .get()
+
             listings.map { listing ->
+                val description = descriptions[listing.groupId()]
                 ConsumerGroupSummary(
                     groupId = listing.groupId(),
-                    state = null, // State is not available in ConsumerGroupListing
-                    memberCount = 0,
-                    topicCount = 0,
+                    state = description?.state()?.name ?: listing.state().orElse(null)?.name,
+                    memberCount = description?.members()?.size ?: 0,
+                    topicCount = offsets[listing.groupId()].orEmpty().keys.map { it.topic() }.toSet().size,
                 )
             }.sortedBy { it.groupId }
         }
 
     override suspend fun describeGroup(groupId: String): ConsumerGroupDetail? =
         withContext(Dispatchers.IO) {
-            try {
-                val descriptions = admin.describeConsumerGroups(listOf(groupId)).all().get()
-                val description = descriptions[groupId] ?: return@withContext null
+            val descriptions = admin.describeConsumerGroups(listOf(groupId)).all().get()
+            val description = descriptions[groupId] ?: return@withContext null
 
-                val members =
-                    description.members().map { member ->
-                        ConsumerGroupMemberInfo(
-                            memberId = member.consumerId(),
-                            clientId = member.clientId(),
-                            clientHost = member.host(),
-                            assignments =
-                                member.assignment().topicPartitions().map { tp ->
-                                    TopicPartitionInfo(
-                                        topic = tp.topic(),
-                                        partition = tp.partition(),
-                                    )
-                                },
-                        )
-                    }
+            val members =
+                description.members().map { member ->
+                    ConsumerGroupMemberInfo(
+                        memberId = member.consumerId(),
+                        clientId = member.clientId(),
+                        clientHost = member.host(),
+                        assignments =
+                            member.assignment().topicPartitions().map { tp ->
+                                TopicPartitionInfo(
+                                    topic = tp.topic(),
+                                    partition = tp.partition(),
+                                )
+                            }.sortedWith(compareBy(TopicPartitionInfo::topic, TopicPartitionInfo::partition)),
+                    )
+                }.sortedBy(ConsumerGroupMemberInfo::memberId)
 
-                // Get offsets for lag calculation
-                val offsetsResult = admin.listConsumerGroupOffsets(groupId).partitionsToOffsetAndMetadata().get()
-                val topicPartitions = offsetsResult.keys.toList()
+            val offsetsResult = admin.listConsumerGroupOffsets(groupId).partitionsToOffsetAndMetadata().get()
+            val topicPartitions = offsetsResult.keys.toList()
+            val endOffsets =
+                if (topicPartitions.isEmpty()) {
+                    emptyMap()
+                } else {
+                    admin.listOffsets(
+                        topicPartitions.associateWith { org.apache.kafka.clients.admin.OffsetSpec.latest() },
+                    ).all().get()
+                }
 
-                val endOffsets =
-                    if (topicPartitions.isNotEmpty()) {
-                        try {
-                            admin.listOffsets(
-                                topicPartitions.associateWith {
-                                    org.apache.kafka.clients.admin.OffsetSpec.latest()
-                                },
-                            ).all().get()
-                        } catch (e: Exception) {
-                            emptyMap()
+            val partitionLags =
+                offsetsResult.map { (tp, offsetMeta) ->
+                    val endOffset = endOffsets[tp]?.offset()
+                    val assignedMember =
+                        members.find { member ->
+                            member.assignments.any { it.topic == tp.topic() && it.partition == tp.partition() }
                         }
-                    } else {
-                        emptyMap()
-                    }
+                    PartitionLagInfo(
+                        topic = tp.topic(),
+                        partition = tp.partition(),
+                        currentOffset = offsetMeta.offset(),
+                        endOffset = endOffset,
+                        lag =
+                            if (endOffset != null && offsetMeta.offset() >= 0) {
+                                (endOffset - offsetMeta.offset()).coerceAtLeast(0)
+                            } else {
+                                null
+                            },
+                        memberId = assignedMember?.memberId,
+                    )
+                }.sortedWith(compareBy(PartitionLagInfo::topic, PartitionLagInfo::partition))
 
-                val partitionLags =
-                    offsetsResult.map { (tp, offsetMeta) ->
-                        val endOffset = endOffsets[tp]?.offset()
-                        val assignedMember = members.find { m ->
-                            m.assignments.any { it.topic == tp.topic() && it.partition == tp.partition() }
-                        }
-                        PartitionLagInfo(
-                            topic = tp.topic(),
-                            partition = tp.partition(),
-                            currentOffset = offsetMeta.offset(),
-                            endOffset = endOffset,
-                            lag = if (endOffset != null && offsetMeta.offset() >= 0) endOffset - offsetMeta.offset() else null,
-                            memberId = assignedMember?.memberId,
-                        )
-                    }
-
-                ConsumerGroupDetail(
-                    groupId = description.groupId(),
-                    state = description.state().name,
-                    members = members,
-                    partitionLags = partitionLags,
-                )
-            } catch (e: Exception) {
-                null
-            }
+            ConsumerGroupDetail(
+                groupId = description.groupId(),
+                state = description.state().name,
+                members = members,
+                partitionLags = partitionLags,
+            )
         }
 
     override suspend fun resetOffsets(
@@ -522,8 +527,9 @@ private class DefaultKafkaConsumerGroupClient(
     ) {
         withContext(Dispatchers.IO) {
             // Get partitions for the topic
-            val topicDescription = admin.describeTopics(listOf(topic)).allTopicNames().get()[topic]
-                ?: error("Topic not found: $topic")
+            val topicDescription =
+                admin.describeTopics(listOf(topic)).allTopicNames().get()[topic]
+                    ?: error("Topic not found: $topic")
 
             val partitions = topicDescription.partitions().map { it.partition() }
             val topicPartitions = partitions.map { TopicPartition(topic, it) }
@@ -538,7 +544,8 @@ private class DefaultKafkaConsumerGroupClient(
                                 },
                             ).all().get()
                         topicPartitions.associateWith { tp ->
-                            org.apache.kafka.clients.consumer.OffsetAndMetadata(beginningOffsets[tp]?.offset() ?: 0L)
+                            val offset = checkNotNull(beginningOffsets[tp]) { "No earliest offset for $tp" }.offset()
+                            org.apache.kafka.clients.consumer.OffsetAndMetadata(offset)
                         }
                     }
                     is OffsetResetSpec.Latest -> {
@@ -549,7 +556,8 @@ private class DefaultKafkaConsumerGroupClient(
                                 },
                             ).all().get()
                         topicPartitions.associateWith { tp ->
-                            org.apache.kafka.clients.consumer.OffsetAndMetadata(endOffsets[tp]?.offset() ?: 0L)
+                            val offset = checkNotNull(endOffsets[tp]) { "No latest offset for $tp" }.offset()
+                            org.apache.kafka.clients.consumer.OffsetAndMetadata(offset)
                         }
                     }
                     is OffsetResetSpec.Timestamp -> {
@@ -566,10 +574,18 @@ private class DefaultKafkaConsumerGroupClient(
                                 },
                             ).all().get()
                         topicPartitions.associateWith { tp ->
-                            val offset = timestampOffsets[tp]?.offset() ?: endOffsets[tp]?.offset() ?: 0L
+                            val offset =
+                                resolveTimestampResetOffset(
+                                    timestampOffsets[tp]?.offset(),
+                                    endOffsets[tp]?.offset(),
+                                )
                             org.apache.kafka.clients.consumer.OffsetAndMetadata(offset)
                         }
                     }
+                    is OffsetResetSpec.Offset ->
+                        topicPartitions.associateWith {
+                            org.apache.kafka.clients.consumer.OffsetAndMetadata(spec.offset)
+                        }
                 }
 
             admin.alterConsumerGroupOffsets(groupId, offsetsMap).all().get()
@@ -589,6 +605,13 @@ private class DefaultKafkaConsumerGroupClient(
     }
 }
 
+internal fun resolveTimestampResetOffset(
+    timestampOffset: Long?,
+    endOffset: Long?,
+): Long =
+    timestampOffset?.takeIf { it >= 0 }
+        ?: requireNotNull(endOffset) { "No end offset available" }
+
 private fun KafkaConnectionConfig.toProperties(): Properties =
     Properties().apply {
         put("bootstrap.servers", bootstrapServers.joinToString(","))
@@ -604,7 +627,7 @@ private fun KafkaConnectionConfig.toProperties(): Properties =
             put("sasl.mechanism", mechanism)
         }
         saslUsername?.let { username ->
-            put("sasl.jaas.config", buildSaslJaasConfig(username, saslPassword))
+            put("sasl.jaas.config", buildSaslJaasConfig(saslMechanism, username, saslPassword))
         }
 
         // SSL configuration
@@ -628,9 +651,22 @@ private fun KafkaConnectionConfig.toProperties(): Properties =
     }
 
 private fun buildSaslJaasConfig(
+    mechanism: String?,
     username: String,
     password: String?,
 ): String {
-    val passwordPart = password?.let { " password=\"$it\";" } ?: ""
-    return "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"$username\"$passwordPart;"
+    if (mechanism == "OAUTHBEARER") {
+        return "org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required;"
+    }
+    val loginModule =
+        if (mechanism == "SCRAM-SHA-256" || mechanism == "SCRAM-SHA-512") {
+            "org.apache.kafka.common.security.scram.ScramLoginModule"
+        } else {
+            "org.apache.kafka.common.security.plain.PlainLoginModule"
+        }
+    val escapedUsername = username.escapeJaasValue()
+    val passwordPart = password?.let { " password=\"${it.escapeJaasValue()}\"" }.orEmpty()
+    return "$loginModule required username=\"$escapedUsername\"$passwordPart;"
 }
+
+private fun String.escapeJaasValue(): String = replace("\\", "\\\\").replace("\"", "\\\"")

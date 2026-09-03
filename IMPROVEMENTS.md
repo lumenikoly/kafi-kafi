@@ -17,7 +17,7 @@
 
 ## 1. High Priority Features
 
-### 1.1 Consumer Groups Management
+### 1.1 Consumer Groups Management ✅ IMPLEMENTED
 
 **Priority:** 🔴 Critical
 **Effort:** Medium (3-5 days)
@@ -30,78 +30,14 @@
 - Reset offsets (to earliest, latest, or specific timestamp)
 - Delete consumer groups
 
-#### Implementation Plan
+#### Implementation Status
 
-**New Files:**
-```
-core-kafka/src/main/kotlin/com/lightkafka/core/kafka/
-├── ConsumerGroupService.kt          # Service for consumer group operations
-├── ConsumerGroupPort.kt             # Port interface
-└── model/
-    └── ConsumerGroupInfo.kt         # Data models
-
-ui/src/main/kotlin/com/lightkafka/ui/
-├── ConsumerGroupsPane.kt            # UI component for groups list
-├── ConsumerGroupDetailPane.kt       # Detail view with lag/members
-└── OffsetResetDialog.kt             # Dialog for resetting offsets
-```
-
-**Core Models:**
-```kotlin
-data class ConsumerGroupInfo(
-    val groupId: String,
-    val state: ConsumerGroupState,      // STABLE, REBALANCING, etc.
-    val members: Int,
-    val totalLag: Long,
-    val topics: Set<String>
-)
-
-data class ConsumerGroupMember(
-    val memberId: String,
-    val clientId: String,
-    val host: String,
-    val assignments: List<TopicPartition>
-)
-
-data class PartitionLag(
-    val topic: String,
-    val partition: Int,
-    val currentOffset: Long,
-    val endOffset: Long,
-    val lag: Long,
-    val memberId: String?              // Which member owns this partition
-)
-```
-
-**Port Interface:**
-```kotlin
-interface ConsumerGroupPort {
-    suspend fun listGroups(): Result<List<ConsumerGroupInfo>>
-    suspend fun getGroupDetails(groupId: String): Result<ConsumerGroupDetail>
-    suspend fun resetOffsets(groupId: String, topic: String, resetSpec: OffsetResetSpec): Result<Unit>
-    suspend fun deleteGroup(groupId: String): Result<Unit>
-}
-
-sealed class OffsetResetSpec {
-    data class ToEarliest(val partitions: List<Int>?) : OffsetResetSpec()
-    data class ToLatest(val partitions: List<Int>?) : OffsetResetSpec()
-    data class ToTimestamp(val timestamp: Instant, val partitions: List<Int>?) : OffsetResetSpec()
-    data class ToOffset(val offsets: Map<Int, Long>) : OffsetResetSpec()
-}
-```
-
-**UI Components:**
-- Add "Consumer Groups" tab next to Topics in sidebar
-- Table showing: Group ID, State, Members, Total Lag, Topics
-- Click to expand → shows per-partition lag with member assignments
-- Context menu: Reset Offsets, Delete Group, View Members
-
-**Kafka AdminClient APIs to use:**
-- `listConsumerGroups()`
-- `describeConsumerGroups()`
-- `listConsumerGroupOffsets()`
-- `alterConsumerGroupOffsets()`
-- `deleteConsumerGroups()`
+**Completed:**
+- Cluster group list with search, state, member count, and topic count
+- Group details with assignments and committed, end, and lag offsets per partition
+- Offset reset to earliest, latest, absolute offset, or timestamp for all partitions of a topic
+- Consumer group deletion with explicit confirmation and broker error reporting
+- Coroutine service wrapper with validation, timeout handling, and lifecycle cleanup
 
 ---
 
@@ -620,7 +556,7 @@ Wizard Steps:
 ### Phase 1: Foundation (Weeks 1-2)
 1. ✅ **Topic Delete and Enhanced Management** - IMPLEMENTED
 2. ✅ **Topic Configuration Management** - IMPLEMENTED
-3. ⬜ Consumer Groups Management
+3. ✅ **Consumer Groups Management** - IMPLEMENTED
 
 ### Phase 2: Integration (Weeks 3-4)
 4. ⬜ Schema Registry Integration

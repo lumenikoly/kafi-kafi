@@ -60,11 +60,12 @@ class DefaultKafkaConsumerService(
                                 operation = "poll messages",
                                 timeout = operationTimeout,
                             ) {
-                                session.client.poll(request.pollTimeout)
+                                session.withClient { it.poll(request.pollTimeout) }
                             }
                     ) {
                         is KafkaResult.Failure -> {
                             emit(ConsumerEvent.Error(pollResult.error))
+                            delay(request.pollTimeout.toMillis().coerceAtLeast(1))
                         }
 
                         is KafkaResult.Success -> {
@@ -92,7 +93,7 @@ class DefaultKafkaConsumerService(
         session.paused.set(true)
         val partitions = session.assignedPartitions.get()
         runWithKafkaResult(operation = "pause consumer", timeout = operationTimeout) {
-            session.client.pause(partitions)
+            session.withClient { it.pause(partitions) }
         }
     }
 
@@ -101,7 +102,7 @@ class DefaultKafkaConsumerService(
         session.paused.set(false)
         val partitions = session.assignedPartitions.get()
         runWithKafkaResult(operation = "resume consumer", timeout = operationTimeout) {
-            session.client.resume(partitions)
+            session.withClient { it.resume(partitions) }
         }
     }
 
@@ -116,7 +117,7 @@ class DefaultKafkaConsumerService(
                 )
 
         return runWithKafkaResult(operation = "commit offsets", timeout = operationTimeout) {
-            session.client.commit()
+            session.withClient { it.commit() }
         }
     }
 
@@ -149,7 +150,7 @@ class DefaultKafkaConsumerService(
                                 operation = "resolve topic partitions",
                                 timeout = operationTimeout,
                             ) {
-                                session.client.resolvePartitions(request.topic)
+                                session.withClient { it.resolvePartitions(request.topic) }
                             }
                     ) {
                         is KafkaResult.Failure -> return partitionsResult
@@ -177,7 +178,7 @@ class DefaultKafkaConsumerService(
                     operation = "assign partitions",
                     timeout = operationTimeout,
                 ) {
-                    session.client.assign(request.topic, partitions)
+                    session.withClient { it.assign(request.topic, partitions) }
                 }
         ) {
             is KafkaResult.Failure -> return assignResult
@@ -190,7 +191,7 @@ class DefaultKafkaConsumerService(
                     operation = "seek to earliest offsets",
                     timeout = operationTimeout,
                 ) {
-                    session.client.seekToBeginning(partitions)
+                    session.withClient { it.seekToBeginning(partitions) }
                 }
             }
 
@@ -199,16 +200,25 @@ class DefaultKafkaConsumerService(
                     operation = "seek to latest offsets",
                     timeout = operationTimeout,
                 ) {
-                    session.client.seekToEnd(partitions)
+                    session.withClient { it.seekToEnd(partitions) }
                 }
             }
 
             is ConsumerStartPosition.SpecificOffsets -> {
-                runWithKafkaResult(
-                    operation = "seek to specific offsets",
-                    timeout = operationTimeout,
-                ) {
-                    session.client.seekToOffsets(startPosition.offsets)
+                if (startPosition.offsets.keys != partitions) {
+                    KafkaResult.Failure(
+                        KafkaServiceError.OperationFailed(
+                            operation = "seek to specific offsets",
+                            reason = "Specific offsets must cover every assigned partition",
+                        ),
+                    )
+                } else {
+                    runWithKafkaResult(
+                        operation = "seek to specific offsets",
+                        timeout = operationTimeout,
+                    ) {
+                        session.withClient { it.seekToOffsets(startPosition.offsets) }
+                    }
                 }
             }
 
@@ -217,7 +227,7 @@ class DefaultKafkaConsumerService(
                     operation = "seek to timestamp",
                     timeout = operationTimeout,
                 ) {
-                    session.client.seekToTimestamp(startPosition.timestampEpochMillis, partitions)
+                    session.withClient { it.seekToTimestamp(startPosition.timestampEpochMillis, partitions) }
                 }
             }
         }
@@ -248,17 +258,24 @@ class DefaultKafkaConsumerService(
     private suspend fun activeSessionOrNull(): ActiveSession? = activeSessionMutex.withLock { activeSession }
 
     private class ActiveSession(
-        val client: KafkaConsumerClient,
+        private val client: KafkaConsumerClient,
     ) {
         val running: AtomicBoolean = AtomicBoolean(true)
         val paused: AtomicBoolean = AtomicBoolean(false)
         val assignedPartitions: AtomicReference<Set<Int>> = AtomicReference(emptySet())
 
+        private val clientMutex = Mutex()
         private val closed: AtomicBoolean = AtomicBoolean(false)
+
+        suspend fun <T> withClient(block: suspend (KafkaConsumerClient) -> T): T =
+            clientMutex.withLock {
+                check(!closed.get()) { "Consumer session is closed" }
+                block(client)
+            }
 
         suspend fun close() {
             if (closed.compareAndSet(false, true)) {
-                client.close()
+                clientMutex.withLock { client.close() }
             }
         }
     }

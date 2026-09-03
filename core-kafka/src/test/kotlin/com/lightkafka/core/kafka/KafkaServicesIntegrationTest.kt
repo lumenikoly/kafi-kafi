@@ -11,9 +11,12 @@ import kotlinx.coroutines.withTimeout
 import org.apache.kafka.clients.admin.Admin
 import org.apache.kafka.clients.admin.AdminClientConfig
 import org.apache.kafka.clients.admin.NewTopic
+import org.apache.kafka.clients.consumer.OffsetAndMetadata
+import org.apache.kafka.common.TopicPartition
 import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertInstanceOf
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -29,6 +32,45 @@ import java.util.concurrent.TimeUnit
 @Tag("integration")
 @Testcontainers(disabledWithoutDocker = true)
 class KafkaServicesIntegrationTest {
+    @Test
+    fun `consumer group service lists resets and deletes an inactive group`() =
+        runBlocking {
+            val topicName = uniqueTopicName("groups")
+            val groupId = uniqueTopicName("reader")
+            createTopic(topicName)
+            createConsumerGroupOffset(groupId, topicName, offset = 0)
+            val service =
+                DefaultKafkaConsumerGroupService(
+                    connectionConfig = testConnectionConfig(),
+                    operationTimeout = Duration.ofSeconds(20),
+                )
+            val producer =
+                DefaultKafkaProducerService(
+                    connectionConfig = testConnectionConfig(),
+                    operationTimeout = Duration.ofSeconds(20),
+                )
+
+            try {
+                val groups = service.listGroups().valueOrFail()
+                assertTrue(groups.any { it.groupId == groupId && it.topicCount == 1 })
+
+                producer.send(ProducerMessage(topic = topicName, value = "created".encodeToByteArray())).valueOrFail()
+                service.resetOffsets(groupId, topicName, OffsetResetSpec.Latest).valueOrFail()
+                val latestLag = checkNotNull(service.describeGroup(groupId).valueOrFail()).partitionLags.single()
+                assertEquals(latestLag.endOffset, latestLag.currentOffset)
+
+                service.resetOffsets(groupId, topicName, OffsetResetSpec.Offset(0)).valueOrFail()
+                val resetLag = checkNotNull(service.describeGroup(groupId).valueOrFail()).partitionLags.single()
+                assertEquals(1L, resetLag.lag)
+
+                service.deleteGroup(groupId).valueOrFail()
+                assertTrue(service.listGroups().valueOrFail().none { it.groupId == groupId })
+            } finally {
+                producer.close()
+                service.close()
+            }
+        }
+
     @Test
     fun `admin service lists and describes created topics`() =
         runBlocking {
@@ -176,6 +218,7 @@ class KafkaServicesIntegrationTest {
                 consumerService.close()
                 producerService.close()
             }
+            Unit
         }
 
     private fun testConnectionConfig(): KafkaConnectionConfig =
@@ -203,6 +246,31 @@ class KafkaServicesIntegrationTest {
                 .get(30, TimeUnit.SECONDS)
         }
     }
+
+    private fun createConsumerGroupOffset(
+        groupId: String,
+        topicName: String,
+        offset: Long,
+    ) {
+        val properties =
+            Properties().apply {
+                put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaContainer.bootstrapServers)
+            }
+        Admin.create(properties).use { adminClient ->
+            adminClient
+                .alterConsumerGroupOffsets(
+                    groupId,
+                    mapOf(TopicPartition(topicName, 0) to OffsetAndMetadata(offset)),
+                ).all()
+                .get(30, TimeUnit.SECONDS)
+        }
+    }
+
+    private fun <T> KafkaResult<T>.valueOrFail(): T =
+        when (this) {
+            is KafkaResult.Success -> value
+            is KafkaResult.Failure -> fail("Kafka operation failed: $error")
+        }
 
     private suspend inline fun <reified T : ConsumerEvent> awaitEvent(events: Channel<ConsumerEvent>): T =
         withTimeout(20_000L) {

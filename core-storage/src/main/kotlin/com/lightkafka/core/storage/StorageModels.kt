@@ -3,6 +3,29 @@ package com.lightkafka.core.storage
 import kotlinx.serialization.Serializable
 
 @Serializable
+enum class DefaultConsumerStartPosition {
+    LATEST,
+    EARLIEST,
+}
+
+@Serializable
+data class AppSettings(
+    val defaultConsumerStartPosition: DefaultConsumerStartPosition = DefaultConsumerStartPosition.LATEST,
+    val messageBufferLimit: Int = DEFAULT_MESSAGE_BUFFER_LIMIT,
+) {
+    fun normalized(): AppSettings =
+        copy(
+            messageBufferLimit = messageBufferLimit.coerceIn(MIN_MESSAGE_BUFFER_LIMIT, MAX_MESSAGE_BUFFER_LIMIT),
+        )
+
+    companion object {
+        const val DEFAULT_MESSAGE_BUFFER_LIMIT = 10_000
+        const val MIN_MESSAGE_BUFFER_LIMIT = 100
+        const val MAX_MESSAGE_BUFFER_LIMIT = 100_000
+    }
+}
+
+@Serializable
 enum class SecurityProtocol {
     PLAINTEXT,
     SSL,
@@ -77,6 +100,7 @@ internal data class StoredStorageSnapshot(
     val profiles: List<StoredClusterProfile> = emptyList(),
     val templates: List<ProducerTemplate> = emptyList(),
     val history: List<SendHistoryEntry> = emptyList(),
+    val settings: AppSettings = AppSettings(),
 )
 
 @Serializable

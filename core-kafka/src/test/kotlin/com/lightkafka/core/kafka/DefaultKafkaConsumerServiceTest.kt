@@ -154,6 +154,32 @@ class DefaultKafkaConsumerServiceTest {
         }
 
     @Test
+    fun `specific offsets must cover every assigned partition`() =
+        runTest {
+            val fakeClient = FakeConsumerClient(setOf(0, 1), ArrayDeque())
+            val service =
+                DefaultKafkaConsumerService(
+                    connectionConfig = testConnectionConfig(),
+                    clientFactory = { _, _ -> fakeClient },
+                )
+
+            val event =
+                service
+                    .startSession(
+                        ConsumerSessionRequest(
+                            topic = "orders",
+                            partitions = setOf(0, 1),
+                            startPosition = ConsumerStartPosition.SpecificOffsets(mapOf(0 to 10)),
+                        ),
+                    ).filterIsInstance<ConsumerEvent.Error>()
+                    .first()
+
+            val error = assertInstanceOf(KafkaServiceError.OperationFailed::class.java, event.error)
+            assertEquals("Specific offsets must cover every assigned partition", error.reason)
+            assertEquals(1, fakeClient.closeCount)
+        }
+
+    @Test
     @OptIn(ExperimentalCoroutinesApi::class)
     fun `pause resume commit and stop control the active session`() =
         runTest {
