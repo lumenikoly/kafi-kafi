@@ -19,7 +19,7 @@ locales:
       drafts: Drafts
       guides: Guides
 site:
-  title: Light Kafka
+  title: Kafi Kafi
   theme: terminal
   colorScheme: dark
   accent: blue

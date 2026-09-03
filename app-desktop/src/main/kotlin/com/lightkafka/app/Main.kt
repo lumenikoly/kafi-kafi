@@ -12,7 +12,7 @@ fun main() =
         Window(
             onCloseRequest = ::exitApplication,
             state = rememberWindowState(width = 1280.dp, height = 820.dp),
-            title = "Light Kafka",
+            title = "Kafi Kafi",
         ) {
             window.minimumSize = Dimension(1024, 680)
             appContent()

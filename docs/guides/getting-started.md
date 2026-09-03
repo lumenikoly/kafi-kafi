@@ -8,13 +8,13 @@ Published releases provide native files on the [GitHub Releases](https://github.
 
 - Linux: download the AppImage, make it executable, and run it.
 - Windows: use the MSI installer or extract the portable ZIP.
-- macOS: open the DMG image and launch Light Kafka.
+- macOS: open the DMG image and launch Kafi Kafi.
 
 Linux AppImage example:
 
 ```bash
-chmod +x LightKafkaViewer-*.AppImage
-./LightKafkaViewer-*.AppImage
+chmod +x KafiKafi-*.AppImage
+./KafiKafi-*.AppImage
 ```
 
 ## Run from source
@@ -41,7 +41,7 @@ The wrapper downloads the configured Gradle version automatically. Podman or Doc
 4. Click **Test Connection**. A successful result shows the topic count and connection latency.
 5. Click **Save**, then **Connect**.
 
-Light Kafka changes the active connection only after it can list topics from the selected cluster. If the connection fails, the previous active connection remains available and the editor shows the error.
+Kafi Kafi changes the active connection only after it can list topics from the selected cluster. If the connection fails, the previous active connection remains available and the editor shows the error.
 
 ## Start a local Kafka cluster
 
@@ -52,7 +52,7 @@ The control at the bottom of the navigation rail can run a single-node Apache Ka
 3. Wait until the panel reports that the container is running.
 4. Create and connect a profile for `localhost:9092`.
 
-Light Kafka prefers Podman when both engines are installed. The container is named `kafka-kraft`; clicking the stop icon stops it without deleting it, so a later start reuses the same container.
+Kafi Kafi prefers Podman when both engines are installed. The container is named `kafka-kraft`; clicking the stop icon stops it without deleting it, so a later start reuses the same container.
 
 ## Troubleshooting
 

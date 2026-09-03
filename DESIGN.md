@@ -1,5 +1,5 @@
 ---
-name: Light Kafka
+name: Kafi Kafi
 description: A compact operator console for daily Kafka work.
 colors:
   cobalt-focus: "#5B8CFF"
@@ -48,13 +48,13 @@ components:
     rounded: "{rounded.xs}"
 ---
 
-# Design System: Light Kafka
+# Design System: Kafi Kafi
 
 ## Overview
 
 **Creative North Star: "Operator Console"**
 
-Light Kafka is a quiet, high-density technical workspace. It borrows the speed and spatial discipline of database IDEs without copying their visual noise. Operational state, resource names, numeric data, and the active selection always outrank decoration.
+Kafi Kafi is a quiet, high-density technical workspace. It borrows the speed and spatial discipline of database IDEs without copying their visual noise. Operational state, resource names, numeric data, and the active selection always outrank decoration.
 
 **Key Characteristics:**
 

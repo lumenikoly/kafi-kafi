@@ -60,12 +60,12 @@ jobs:
             os: windows-latest
             artifact_name: windows-msi
             artifact_path: app-desktop/build/compose/binaries/main/msi/*.msi
-            portable_archive: light-kafka-viewer-windows-portable.zip
+            portable_archive: kafi-kafi-windows-portable.zip
           - name: macOS (DMG)
             os: macos-latest
             artifact_name: macos-dmg
             artifact_path: app-desktop/build/compose/binaries/main/dmg/*.dmg
-            portable_archive: light-kafka-viewer-macos-portable.zip
+            portable_archive: kafi-kafi-macos-portable.zip
     uses: ./.github/workflows/_reusable-package-build.yml
     with:
       target_name: ${{ matrix.name }}

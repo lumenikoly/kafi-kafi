@@ -14,7 +14,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "light-kafka-viewer"
+rootProject.name = "kafi-kafi"
 
 include(":core-kafka")
 include(":core-storage")

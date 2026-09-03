@@ -1,6 +1,6 @@
-# Light Kafka
+# Kafi Kafi
 
-Light Kafka is a desktop client for working with Apache Kafka clusters. It connects directly from your computer, so you can inspect a cluster, browse and produce messages, and manage consumer groups without deploying a separate backend.
+Kafi Kafi is a desktop client for working with Apache Kafka clusters. It connects directly from your computer, so you can inspect a cluster, browse and produce messages, and manage consumer groups without deploying a separate backend.
 
 ## Features
 
@@ -27,8 +27,8 @@ Published releases provide native downloads on the [GitHub Releases](https://git
 Download the file for your operating system and launch it normally. On Linux, make the AppImage executable first:
 
 ```bash
-chmod +x LightKafkaViewer-*.AppImage
-./LightKafkaViewer-*.AppImage
+chmod +x KafiKafi-*.AppImage
+./KafiKafi-*.AppImage
 ```
 
 ## Run from source

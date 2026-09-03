@@ -23,7 +23,7 @@ compose.desktop {
         mainClass = "com.lightkafka.app.MainKt"
 
         nativeDistributions {
-            packageName = "LightKafkaViewer"
+            packageName = "KafiKafi"
             packageVersion = "1.0.0"
             val osName = System.getProperty("os.name").lowercase()
             val currentOsFormat =

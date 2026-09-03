@@ -13,7 +13,7 @@ To create a topic:
 3. Add optional Kafka topic configuration name-value pairs.
 4. Click **Create Topic**.
 
-The cluster validates the request and your permissions. Light Kafka shows broker errors without changing the form so you can correct the values and retry.
+The cluster validates the request and your permissions. Kafi Kafi shows broker errors without changing the form so you can correct the values and retry.
 
 ## Inspect a topic
 
@@ -36,7 +36,7 @@ Select **All** to read every partition or choose one partition, then click **Sta
 
 The key and value filters search the messages already held in memory and do not restart Kafka consumption. Click a message to inspect its headers and complete JSON or text value. Valid JSON is formatted for readability; non-UTF-8 payloads are identified as binary and shown only by size.
 
-Light Kafka keeps only the most recent messages up to the configured memory limit. Open **Settings** to select the default start position and set a limit from 100 to 100,000 messages. These defaults apply when you open a new topic message session.
+Kafi Kafi keeps only the most recent messages up to the configured memory limit. Open **Settings** to select the default start position and set a limit from 100 to 100,000 messages. These defaults apply when you open a new topic message session.
 
 ## Produce a message
 
@@ -46,6 +46,6 @@ Light Kafka keeps only the most recent messages up to the configured memory limi
 4. Enter the text or JSON value.
 5. Click **Send message**.
 
-After Kafka acknowledges the record, Light Kafka shows its partition and offset. An empty key is sent as `null`; an empty value is sent as a zero-byte value.
+After Kafka acknowledges the record, Kafi Kafi shows its partition and offset. An empty key is sent as `null`; an empty value is sent as a zero-byte value.
 
 Connection, polling, and production errors appear beside the affected action. Polling retries after the consumer poll interval. To retry production, correct the input or restore the connection and click **Send message** again.

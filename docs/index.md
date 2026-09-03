@@ -1,6 +1,6 @@
-# Light Kafka
+# Kafi Kafi
 
-Light Kafka is a desktop client for inspecting and operating Apache Kafka clusters. It connects directly from the desktop application to Kafka and keeps connection profiles on the local computer; no Light Kafka server is required.
+Kafi Kafi is a desktop client for inspecting and operating Apache Kafka clusters. It connects directly from the desktop application to Kafka and keeps connection profiles on the local computer; no Kafi Kafi server is required.
 
 ## What you can do
 
@@ -14,7 +14,7 @@ Light Kafka is a desktop client for inspecting and operating Apache Kafka cluste
 
 ## Get started
 
-1. [Install or run Light Kafka and connect to a cluster](guides/getting-started.md).
+1. [Install or run Kafi Kafi and connect to a cluster](guides/getting-started.md).
 2. [Browse topics, read messages, and produce records](guides/messages.md).
 3. [Inspect and manage consumer groups](guides/consumer-groups.md).
 
@@ -22,6 +22,6 @@ For the system boundary and module responsibilities, see the [architecture overv
 
 ## Local data and credentials
 
-Light Kafka stores profiles and settings in `~/.lightkafka/storage.json`. SASL and SSL password fields are encrypted with AES-GCM and stored separately in `~/.lightkafka/secrets/secrets.json`. The application derives the encryption key from the local username, operating system name, home-directory path, and a random salt.
+Kafi Kafi stores profiles and settings in `~/.lightkafka/storage.json`. SASL and SSL password fields are encrypted with AES-GCM and stored separately in `~/.lightkafka/secrets/secrets.json`. The application derives the encryption key from the local username, operating system name, home-directory path, and a random salt.
 
-These files are local application storage, not a shared credential vault. Protect the user account and home directory on any computer that runs Light Kafka.
+These files are local application storage, not a shared credential vault. Protect the user account and home directory on any computer that runs Kafi Kafi.

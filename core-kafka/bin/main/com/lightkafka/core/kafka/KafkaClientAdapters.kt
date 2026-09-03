@@ -49,7 +49,7 @@ val defaultKafkaConsumerClientFactory =
             config.toProperties().apply {
                 put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer::class.java.name)
                 put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer::class.java.name)
-                put(ConsumerConfig.GROUP_ID_CONFIG, request.groupId ?: "light-kafka-viewer-${UUID.randomUUID()}")
+                put(ConsumerConfig.GROUP_ID_CONFIG, request.groupId ?: "kafi-kafi-${UUID.randomUUID()}")
                 put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, request.autoCommit.toString())
                 put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, request.maxPollRecords.toString())
                 put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "none")

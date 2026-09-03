@@ -1,6 +1,6 @@
 # Architecture
 
-Light Kafka is a local desktop application that connects directly to an external Apache Kafka cluster. The user interacts with a Compose Desktop UI; coroutine-based services translate those actions into Kafka Java Client calls, while profiles and encrypted password fields remain on the user's computer. There is no Light Kafka backend or cloud service.
+Kafi Kafi is a local desktop application that connects directly to an external Apache Kafka cluster. The user interacts with a Compose Desktop UI; coroutine-based services translate those actions into Kafka Java Client calls, while profiles and encrypted password fields remain on the user's computer. There is no Kafi Kafi backend or cloud service.
 
 ## System boundary
 

@@ -24,4 +24,4 @@ The reset applies to every partition of the topic. Timestamp mode uses the first
 
 ## Delete a group
 
-Select the group, click **Delete group**, and confirm. This removes the group and its committed offsets. Kafka rejects the request while the group has active members. After a successful deletion, Light Kafka reloads the group list.
+Select the group, click **Delete group**, and confirm. This removes the group and its committed offsets. Kafka rejects the request while the group has active members. After a successful deletion, Kafi Kafi reloads the group list.

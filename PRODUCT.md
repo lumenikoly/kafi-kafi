@@ -8,11 +8,11 @@ adaptive
 
 ## Users
 
-Light Kafka is primarily for developers and DevOps engineers who inspect and operate Kafka clusters during daily development and operational work.
+Kafi Kafi is primarily for developers and DevOps engineers who inspect and operate Kafka clusters during daily development and operational work.
 
 ## Product Purpose
 
-Light Kafka provides a local desktop workspace for connecting directly to Kafka, inspecting cluster state, browsing and producing messages, and managing consumer groups without a separate backend.
+Kafi Kafi provides a local desktop workspace for connecting directly to Kafka, inspecting cluster state, browsing and producing messages, and managing consumer groups without a separate backend.
 
 ## Positioning
 
@@ -32,7 +32,7 @@ Users work with dense technical data for extended sessions. Fast scanning, clear
 
 ## Brand Commitments
 
-The product name is Light Kafka. Its voice is concise, technical, and calm.
+The product name is Kafi Kafi. Its voice is concise, technical, and calm.
 
 ## Evidence on Hand
 
