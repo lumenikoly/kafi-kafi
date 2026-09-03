@@ -18,7 +18,7 @@ Connection profiles and settings stay in `~/.lightkafka`. Password fields are st
 
 ## Install
 
-Tagged releases produce native downloads on the [GitHub Releases](https://github.com/lumenikoly/kafi-kafi/releases) page:
+Published releases provide native downloads on the [GitHub Releases](https://github.com/lumenikoly/kafi-kafi/releases) page:
 
 - Linux: AppImage
 - Windows: MSI installer and portable ZIP
@@ -58,3 +58,5 @@ The [documentation](docs/index.md) covers connection setup, local Kafka, topic m
 ```
 
 Integration tests require a running Docker-compatible container engine. The packaging command creates the native format configured for the current operating system.
+
+Maintainers publish a release from **Actions → Release Build → Run workflow** on the `main` branch. The required tag must use the `vX.Y.Z` format; the workflow builds every native package and creates the tag and GitHub Release from the selected `main` commit.

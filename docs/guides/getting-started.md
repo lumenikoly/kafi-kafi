@@ -4,7 +4,7 @@ Use a native release for normal use or run the application from source for devel
 
 ## Install a release
 
-Tagged releases publish native files on the [GitHub Releases](https://github.com/lumenikoly/kafi-kafi/releases) page:
+Published releases provide native files on the [GitHub Releases](https://github.com/lumenikoly/kafi-kafi/releases) page:
 
 - Linux: download the AppImage, make it executable, and run it.
 - Windows: use the MSI installer or extract the portable ZIP.
