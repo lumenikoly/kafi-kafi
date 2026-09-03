@@ -16,13 +16,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -49,6 +50,7 @@ import com.lightkafka.ui.infra.TextSecondary
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
+import com.lightkafka.ui.infra.ConsoleIconButton as consoleIconButton
 
 @Suppress("ktlint:standard:function-naming")
 @Composable
@@ -227,7 +229,11 @@ private fun ProfileListPanel(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text("Profiles", style = MaterialTheme.typography.titleSmall, color = TextPrimary)
-            TextButton(onClick = onNewProfile) { Text("+", color = TextSecondary) }
+            consoleIconButton(
+                icon = Icons.Outlined.Add,
+                label = "New connection",
+                onClick = onNewProfile,
+            )
         }
         HorizontalDivider(color = BorderSubtle)
         LazyColumn(

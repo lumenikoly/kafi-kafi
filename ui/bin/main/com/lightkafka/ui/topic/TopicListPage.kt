@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
@@ -53,6 +55,7 @@ import com.lightkafka.ui.shell.Store
 import com.lightkafka.ui.shell.TabType
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
+import com.lightkafka.ui.infra.ConsoleIconButton as consoleIconButton
 
 // ── Main Entry ─────────────────────────────────────────────────────────────
 
@@ -206,16 +209,11 @@ private fun TopicListHeader(
                 color = TextMuted,
             )
         }
-        Button(
+        consoleIconButton(
+            icon = Icons.Outlined.Add,
+            label = "Create topic",
             onClick = onCreateTopicClick,
-            colors =
-                ButtonDefaults.buttonColors(
-                    containerColor = AccentViolet,
-                    contentColor = TextPrimary,
-                ),
-        ) {
-            Text("+ Create Topic")
-        }
+        )
     }
 }
 

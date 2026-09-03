@@ -33,14 +33,14 @@ private val KafiDarkScheme =
 
 private val KafiTypography =
     Typography(
-        headlineMedium = TextStyle(fontSize = 22.sp, lineHeight = 28.sp, fontWeight = FontWeight.SemiBold),
-        headlineSmall = TextStyle(fontSize = 18.sp, lineHeight = 24.sp, fontWeight = FontWeight.SemiBold),
-        titleMedium = TextStyle(fontSize = 16.sp, lineHeight = 22.sp, fontWeight = FontWeight.SemiBold),
-        titleSmall = TextStyle(fontSize = 14.sp, lineHeight = 20.sp, fontWeight = FontWeight.SemiBold),
-        bodyLarge = TextStyle(fontSize = 15.sp, lineHeight = 22.sp),
-        bodyMedium = TextStyle(fontSize = 14.sp, lineHeight = 20.sp),
-        bodySmall = TextStyle(fontSize = 12.sp, lineHeight = 18.sp),
-        labelLarge = TextStyle(fontSize = 13.sp, lineHeight = 18.sp, fontWeight = FontWeight.Medium),
+        headlineMedium = TextStyle(fontSize = 20.sp, lineHeight = 26.sp, fontWeight = FontWeight.SemiBold),
+        headlineSmall = TextStyle(fontSize = 17.sp, lineHeight = 22.sp, fontWeight = FontWeight.SemiBold),
+        titleMedium = TextStyle(fontSize = 15.sp, lineHeight = 20.sp, fontWeight = FontWeight.SemiBold),
+        titleSmall = TextStyle(fontSize = 13.sp, lineHeight = 18.sp, fontWeight = FontWeight.SemiBold),
+        bodyLarge = TextStyle(fontSize = 14.sp, lineHeight = 20.sp),
+        bodyMedium = TextStyle(fontSize = 13.sp, lineHeight = 18.sp),
+        bodySmall = TextStyle(fontSize = 12.sp, lineHeight = 17.sp),
+        labelLarge = TextStyle(fontSize = 13.sp, lineHeight = 18.sp, fontWeight = FontWeight.SemiBold),
         labelMedium = TextStyle(fontSize = 12.sp, lineHeight = 16.sp, fontWeight = FontWeight.Medium),
         labelSmall = TextStyle(fontSize = 11.sp, lineHeight = 14.sp, fontWeight = FontWeight.Medium),
     )
@@ -50,7 +50,7 @@ private val KafiShapes =
         extraSmall = RoundedCornerShape(4.dp),
         small = RoundedCornerShape(6.dp),
         medium = RoundedCornerShape(8.dp),
-        large = RoundedCornerShape(12.dp),
+        large = RoundedCornerShape(8.dp),
     )
 
 @Suppress("ktlint:standard:function-naming")

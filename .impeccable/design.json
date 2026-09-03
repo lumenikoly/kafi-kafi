@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-03T00:00:00Z",
+  "title": "Design System: Light Kafka",
+  "extensions": {
+    "colorMeta": {
+      "cobalt-focus": { "role": "primary", "displayName": "Cobalt Focus", "canonical": "#5B8CFF" },
+      "graphite-background": { "role": "neutral", "displayName": "Graphite Background", "canonical": "#0B0D10" },
+      "status-success": { "role": "status", "displayName": "Operational Mint", "canonical": "#5CCB8A" }
+    },
+    "shadows": [],
+    "motion": []
+  },
+  "components": [],
+  "narrative": {
+    "northStar": "Operator Console",
+    "overview": "A quiet, high-density technical workspace where operational state and data outrank decoration.",
+    "keyCharacteristics": ["Compact icon navigation", "Persistent cluster status", "Dense data surfaces", "Sparse cobalt accent"],
+    "rules": [
+      { "name": "Sparse Accent", "body": "Cobalt identifies current context or primary action and never decorates containers.", "section": "colors" },
+      { "name": "Flat by Default", "body": "Depth comes from tonal planes and dividers rather than shadows.", "section": "elevation" }
+    ],
+    "dos": ["Keep operational status near its workspace", "Expose icon names through tooltips"],
+    "donts": ["Use gradients, glow, or glass", "Hide destructive actions behind unlabeled icons"]
+  }
+}

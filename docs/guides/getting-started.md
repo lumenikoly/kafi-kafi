@@ -35,8 +35,8 @@ The wrapper downloads the configured Gradle version automatically. Podman or Doc
 
 ## Connect to a cluster
 
-1. Open **Connections** in the sidebar.
-2. Click **+** and enter a profile name and one or more comma-separated **Bootstrap Servers**, such as `broker-1:9092,broker-2:9092`.
+1. Open **Connections** from the plug icon in the left navigation rail. Hover over an icon to see its name.
+2. Click the **+** icon in the profile pane and enter a profile name and one or more comma-separated **Bootstrap Servers**, such as `broker-1:9092,broker-2:9092`.
 3. Select the security protocol required by the cluster. For SASL or SSL, complete the credential and certificate fields that appear.
 4. Click **Test Connection**. A successful result shows the topic count and connection latency.
 5. Click **Save**, then **Connect**.
@@ -45,14 +45,14 @@ Light Kafka changes the active connection only after it can list topics from the
 
 ## Start a local Kafka cluster
 
-The **Local Kafka** panel at the bottom of the sidebar can run a single-node Apache Kafka KRaft container. The launcher requires Podman or Docker and a POSIX-compatible `sh`, so it does not run in a standard Windows environment.
+The control at the bottom of the navigation rail can run a single-node Apache Kafka KRaft container. Its status dot shows whether the local broker is running; hover over the control to see the available action. The launcher requires Podman or Docker and a POSIX-compatible `sh`, so it does not run in a standard Windows environment.
 
 1. Start Podman or Docker.
-2. Click **Start** in the **Local Kafka** panel.
+2. Click the play icon at the bottom of the navigation rail.
 3. Wait until the panel reports that the container is running.
 4. Create and connect a profile for `localhost:9092`.
 
-Light Kafka prefers Podman when both engines are installed. The container is named `kafka-kraft`; clicking **Stop** stops it without deleting it, so a later **Start** reuses the same container.
+Light Kafka prefers Podman when both engines are installed. The container is named `kafka-kraft`; clicking the stop icon stops it without deleting it, so a later start reuses the same container.
 
 ## Troubleshooting
 
