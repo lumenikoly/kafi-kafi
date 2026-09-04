@@ -12,7 +12,7 @@ Kafi Kafi is a desktop client for working with Apache Kafka clusters. It connect
 - Inspect message headers and complete JSON or text values, and identify binary payloads by size.
 - Produce records with an optional key and partition.
 - Inspect consumer group members, assignments, committed offsets, and lag; reset offsets or delete inactive groups.
-- Start a local single-node Kafka KRaft container through Podman or Docker on systems with a POSIX-compatible shell.
+- Start a local single-node Kafka KRaft container through Podman or Docker.
 
 Connection profiles and settings stay in `~/.lightkafka`. Password fields are stored separately in an AES-GCM encrypted file.
 
@@ -43,7 +43,7 @@ cd kafi-kafi
 
 On Windows, run `gradlew.bat :app-desktop:run` instead.
 
-To connect, open **Connections**, create a profile with at least one Kafka bootstrap server, test it, save it, and click **Connect**. Podman or Docker is only required for the built-in local Kafka launcher and integration tests. The launcher also requires a POSIX-compatible `sh`, so it does not run in a standard Windows environment.
+To connect, open **Connections**, create a profile with at least one Kafka bootstrap server, test it, save it, and click **Connect**. Podman or Docker is only required for the built-in local Kafka launcher and integration tests. The launcher works on Windows, macOS, and Linux when the `podman` or `docker` command is available on `PATH`.
 
 ## Documentation
 

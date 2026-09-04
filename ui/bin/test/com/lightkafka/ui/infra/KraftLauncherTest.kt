@@ -154,13 +154,12 @@ private class FakeCommandRunner(
     private val resp: FakeResponses = FakeResponses(),
 ) : CommandRunner {
     override fun run(command: List<String>): CommandResult {
-        if (command.size >= 3 && command[0] == "sh" && command[1] == "-lc") {
-            val probe = command[2]
-            return when {
-                probe.contains("podman") ->
+        if (command.getOrNull(1) == "--version") {
+            return when (command[0]) {
+                "podman" ->
                     if (resp.podmanExists) CommandResult(0, "/usr/bin/podman", "") else CommandResult(1, "", "")
 
-                probe.contains("docker") ->
+                "docker" ->
                     if (resp.dockerExists) CommandResult(0, "/usr/bin/docker", "") else CommandResult(1, "", "")
 
                 else -> CommandResult(1, "", "")

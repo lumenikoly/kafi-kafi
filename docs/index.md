@@ -10,7 +10,7 @@ Kafi Kafi is a desktop client for inspecting and operating Apache Kafka clusters
 - Read, pause, filter, and inspect messages from a chosen position or partition.
 - Produce records with an optional key and partition.
 - Review consumer group membership and lag, reset offsets, and delete inactive groups.
-- Start a local single-node Kafka KRaft container for development on systems with a POSIX-compatible shell.
+- Start a local single-node Kafka KRaft container for development through Podman or Docker.
 
 ## Get started
 

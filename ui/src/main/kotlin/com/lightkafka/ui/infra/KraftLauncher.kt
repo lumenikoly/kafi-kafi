@@ -1,5 +1,7 @@
 package com.lightkafka.ui.infra
 
+import java.io.IOException
+
 data class KraftLaunchResult(
     val success: Boolean,
     val message: String,
@@ -29,7 +31,7 @@ class KraftLauncher(
                     message = "Neither podman nor docker is available",
                 )
 
-        val runCommand =
+        val command =
             listOf(
                 availableEngine,
                 "run",
@@ -60,7 +62,7 @@ class KraftLauncher(
                 "KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS=0",
                 "apache/kafka:4.1.1",
             )
-        val runResult = commandRunner.run(runCommand)
+        val runResult = runCommand(command)
         if (runResult.exitCode == 0) {
             return KraftLaunchResult(
                 success = true,
@@ -70,7 +72,7 @@ class KraftLauncher(
 
         val conflictError = "already in use by container"
         if (runResult.stderr.contains(conflictError, ignoreCase = true)) {
-            val startResult = commandRunner.run(listOf(availableEngine, "start", "kafka-kraft"))
+            val startResult = runCommand(listOf(availableEngine, "start", "kafka-kraft"))
             if (startResult.exitCode == 0) {
                 return KraftLaunchResult(
                     success = true,
@@ -94,7 +96,7 @@ class KraftLauncher(
                     message = "Neither podman nor docker is available",
                 )
 
-        val stopResult = commandRunner.run(listOf(availableEngine, "stop", "kafka-kraft"))
+        val stopResult = runCommand(listOf(availableEngine, "stop", "kafka-kraft"))
         if (stopResult.exitCode == 0) {
             return KraftLaunchResult(
                 success = true,
@@ -125,7 +127,7 @@ class KraftLauncher(
                 )
 
         val inspectResult =
-            commandRunner.run(
+            runCommand(
                 listOf(availableEngine, "inspect", "-f", "{{.State.Running}}", "kafka-kraft"),
             )
         if (inspectResult.exitCode == 0) {
@@ -167,9 +169,16 @@ class KraftLauncher(
     private fun detectEngine(): String? {
         val engines = listOf("podman", "docker")
         return engines.firstOrNull { engine ->
-            commandRunner.run(listOf("sh", "-lc", "command -v $engine")).exitCode == 0
+            runCommand(listOf(engine, "--version")).exitCode == 0
         }
     }
+
+    private fun runCommand(command: List<String>): CommandResult =
+        try {
+            commandRunner.run(command)
+        } catch (error: IOException) {
+            CommandResult(exitCode = -1, stdout = "", stderr = error.message ?: "Failed to run ${command.first()}")
+        }
 }
 
 data class CommandResult(

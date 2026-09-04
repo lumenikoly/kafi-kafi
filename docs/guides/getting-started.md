@@ -45,7 +45,7 @@ Kafi Kafi changes the active connection only after it can list topics from the s
 
 ## Start a local Kafka cluster
 
-The control at the bottom of the navigation rail can run a single-node Apache Kafka KRaft container. Its status dot shows whether the local broker is running; hover over the control to see the available action. The launcher requires Podman or Docker and a POSIX-compatible `sh`, so it does not run in a standard Windows environment.
+The control at the bottom of the navigation rail can run a single-node Apache Kafka KRaft container on Windows, macOS, or Linux. Its status dot shows whether the local broker is running; hover over the control to see the available action. The launcher requires the `podman` or `docker` command to be available on `PATH`; it does not require a separate shell.
 
 1. Start Podman or Docker.
 2. Click the play icon at the bottom of the navigation rail.
