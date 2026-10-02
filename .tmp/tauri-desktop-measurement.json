@@ -1,0 +1,12 @@
+{
+  "runtime": "Tauri",
+  "os": "Microsoft Windows NT 10.0.26100.0",
+  "architecture": "X64",
+  "interactiveMs": 1352,
+  "startupMethod": "Rust process start to React requestAnimationFrame / ui_ready",
+  "idleWorkingSetBytes": 367230976.0,
+  "processCount": 7,
+  "executableBytes": 13200896,
+  "idleSeconds": 15,
+  "measuredAtUtc": "2026-10-02T13:50:38.5988936Z"
+}

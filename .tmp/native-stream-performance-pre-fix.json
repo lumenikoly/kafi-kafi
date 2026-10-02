@@ -1,0 +1,75 @@
+{
+  "test": "native sustained stream via WebView2 CDP",
+  "recorded_at_local": "2026-10-02T07:09:25.4323771-07:00",
+  "executable": "src-tauri/target-release/release/kafi-kafi.exe",
+  "broker": "127.0.0.1:19092",
+  "topic": "codex_stream_20261002_perf",
+  "profile": "Codex stream smoke 20261002",
+  "producer": {
+    "command": "kafka-producer-perf-test.sh --num-records 100000 --record-size 1024 --throughput 10000 --producer-props bootstrap.servers=127.0.0.1:9092 acks=1",
+    "summary_records_sent": 100000,
+    "average_records_per_second": 9927.529038,
+    "avg_latency_ms": 237.56,
+    "p50_latency_ms": 164,
+    "p95_latency_ms": 647,
+    "p99_latency_ms": 702,
+    "p999_latency_ms": 710,
+    "max_latency_ms": 715,
+    "record_size_bytes": 1024
+  },
+  "midpoint": {
+    "producer_checkpoint_records_sent": 48256,
+    "mounted_tbody_rows": 9265
+  },
+  "completion": {
+    "kafka_end_offset": 199999,
+    "kafka_records_at_end_offset": 200000,
+    "mounted_tbody_rows": 10000,
+    "ui_status": "running",
+    "ui_retained": 10000,
+    "ui_evicted": 189999,
+    "discrepancy": "The perf-test final summary reports 100000 records sent, but Kafka end offset and UI counters indicate 200000 records in the topic. Cause was not established."
+  },
+  "responsiveness_after_stream": {
+    "sampling_window_ms": 1000,
+    "animation_frames": 67,
+    "max_inter_frame_gap_ms": 28.2,
+    "note": "Measured after producer completion, not during active production."
+  },
+  "process_tree_memory_end": {
+    "process_count": 7,
+    "working_set_mib": 1579.7,
+    "largest_process": "WebView2 renderer",
+    "largest_process_working_set_mib": 1255.1
+  },
+  "cleanup": {
+    "app_process_stopped": true,
+    "profile_deleted": true,
+    "topic_deleted": true,
+    "relay_removed": true
+  },
+  "notes": [
+    "Unique test topic/profile created; no records larger than 1 KiB.",
+    "Producer networking needed a temporary BusyBox relay inside the integration container from localhost:19092 to localhost:9092 because the broker advertises localhost:19092. Relay is being removed during cleanup.",
+    "Integration container was left running."
+  ],
+  "after_layout_fix": {
+    "injected_css": "app-shell grid-template-rows:minmax(0,1fr); main min-height:0",
+    "window_resize_dispatched": true,
+    "viewport_height_px": 565,
+    "scroll_height_px": 320032,
+    "mounted_tbody_rows": 26,
+    "max_expected_visible_rows": 100
+  },
+  "responsiveness_after_layout_fix": {
+    "sampling_window_ms": 1000,
+    "animation_frames": 68,
+    "max_inter_frame_gap_ms": 17.2,
+    "note": "Measured after stream completion and after table viewport was constrained."
+  },
+  "process_tree_memory_after_layout_fix": {
+    "process_count": 7,
+    "working_set_mib": 685.9,
+    "renderer_working_set_mib": 361.1
+  }
+}

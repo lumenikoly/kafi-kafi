@@ -1,0 +1,37 @@
+[
+  {
+    "role": "Rust host",
+    "workingSetBytes": 33701888,
+    "privateBytes": 8232960
+  },
+  {
+    "role": "browser",
+    "workingSetBytes": 131821568,
+    "privateBytes": 38793216
+  },
+  {
+    "role": "crashpad-handler",
+    "workingSetBytes": 22945792,
+    "privateBytes": 3547136
+  },
+  {
+    "role": "gpu-process",
+    "workingSetBytes": 81289216,
+    "privateBytes": 56725504
+  },
+  {
+    "role": "utility",
+    "workingSetBytes": 39723008,
+    "privateBytes": 12132352
+  },
+  {
+    "role": "utility",
+    "workingSetBytes": 22560768,
+    "privateBytes": 8798208
+  },
+  {
+    "role": "renderer",
+    "workingSetBytes": 83255296,
+    "privateBytes": 35893248
+  }
+]

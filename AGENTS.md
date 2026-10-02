@@ -54,3 +54,10 @@
   rationale in `ADR`, and local ownership or rule boundaries in `MODULE`.
 - Update this managed block only through an explicit `$toudocu init`.
 <!-- toudocu:project-guidance:end -->
+
+## Tauri migration development
+
+- The new desktop runtime is `src-tauri/`; the React UI is `src/`. Keep Kafka and system operations in Rust behind named IPC commands.
+- Use `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`, and the pinned Rust fmt/clippy/test checks. Real Kafka tests require `KAFI_TEST_KAFKA_BOOTSTRAP`.
+- Keep record payloads in bounded Rust buffers, transfer projections over Tauri Channels, and release consumer tasks when their workspace closes.
+- Tauri/Rust/React is the only application implementation. Keep the read-only legacy data importer and its compatibility fixtures; never overwrite or delete legacy user storage automatically. Keep unverified platform and performance checks explicit.

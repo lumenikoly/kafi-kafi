@@ -24,11 +24,11 @@ Users work with dense technical data for extended sessions. Fast scanning, clear
 
 ## Capabilities and Constraints
 
-- The application connects directly to external Kafka clusters through the Kafka Java client.
+- The application connects directly to external Kafka clusters through rust-rdkafka in the Tauri runtime.
 - It supports topic, broker, message, consumer-group, connection, settings, and optional local KRaft container workflows.
 - Destructive and high-impact actions must remain explicit even when routine actions use icons.
 - Icons may replace text only when their meaning is conventional or exposed through an accessible description and tooltip.
-- The interface is implemented with Compose Multiplatform for desktop and packaged for Linux, Windows, and macOS.
+- The interface uses React and TypeScript inside Tauri with Rust for Kafka and system operations. Windows, Linux and separate Intel/ARM macOS packages are defined in CI; cross-platform and performance verification remain release requirements.
 
 ## Brand Commitments
 

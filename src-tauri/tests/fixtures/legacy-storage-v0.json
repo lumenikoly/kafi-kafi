@@ -1,0 +1,6 @@
+{
+  "profiles": [],
+  "templates": [],
+  "history": [],
+  "settings": {"defaultConsumerStartPosition":"LATEST","messageBufferLimit":10000}
+}

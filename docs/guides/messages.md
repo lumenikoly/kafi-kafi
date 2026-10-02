@@ -1,51 +1,27 @@
 # Browse topics and work with messages
 
-The **Topics** workspace lets you find topics, inspect their metadata, consume retained records, and produce new records.
+Topics lets you search retained Kafka data and operate on topic configuration. Lists use virtual tables so visible rows remain bounded as the cluster grows.
 
 ## Find or create a topic
 
-After connecting to a cluster, open **Topics**. Search by name or enable **Hide internal** to exclude topics that Kafka identifies as internal.
+After connecting, open **Topics**. Search by name; enable **Internal topics** to include names beginning with `__`. Click **Create topic**, enter a valid name and positive partition/replication counts, and optionally enter configuration as one `name=value` per line. Kafka still enforces availability, replication and permissions. Creation refreshes the list.
 
-To create a topic:
-
-1. Click **Create Topic**.
-2. Enter the topic name, partition count, and replication factor.
-3. Add optional Kafka topic configuration name-value pairs.
-4. Click **Create Topic**.
-
-The cluster validates the request and your permissions. Kafi Kafi shows broker errors without changing the form so you can correct the values and retry.
-
-## Inspect a topic
-
-Double-click a topic to open it. The detail view contains three tabs:
-
-- **Messages** reads and produces records.
-- **Partitions** shows leaders, replicas, and in-sync replicas.
-- **Config** shows the topic configuration and marks default, read-only, and sensitive values. Configuration is read-only.
+Click a topic name to open its workspace tab. **Partitions** shows leaders, replicas, in-sync replicas and earliest/latest offsets. **Configuration** shows values and default/read-only/sensitive flags; selecting a writable non-sensitive parameter allows **Apply**. **Delete topic** requires confirmation and permanently removes its records.
 
 ## Read messages
 
-Choose a start position before starting the consumer:
+Select latest, earliest, offset or timestamp, optionally choose a partition, then click **Start**. Timestamp input uses local date/time and is sent as Unix milliseconds. Explicit offsets must fall inside the retained range for every selected partition. Timestamp positions with no later record use the partition end.
 
-- **Latest** reads records appended after the session starts.
-- **Earliest** reads from the beginning of the retained log.
-- **Specific Offset** applies one non-negative offset to the selected partitions.
-- **Timestamp** starts at the first available record at or after the supplied Unix timestamp in milliseconds.
+**Pause** suspends consumption; **Resume** continues; **Stop** ends the session and frees records. Navigating between topic sections keeps the session alive. Closing its workspace tab or successfully switching profiles stops it. Inspection uses temporary technical groups with automatic commits and offset storage disabled, so it does not advance user-group offsets.
 
-Select **All** to read every partition or choose one partition, then click **Start**. The position and partition controls remain locked while the session is active. **Pause** suspends polling, **Resume** continues it, and **Stop** closes the consumer session.
+Key, value and partition filters run in Rust against the retained records and incoming records. Changing a filter rebuilds the displayed snapshot without restarting the consumer. Settings applies both a record limit and byte limit to new sessions. The status shows retained and evicted counts; once a record leaves the buffer, its detail is unavailable.
 
-The key and value filters search the messages already held in memory and do not restart Kafka consumption. Click a message to inspect its headers and complete JSON or text value. Valid JSON is formatted for readability; non-UTF-8 payloads are identified as binary and shown only by size.
+Click a record's partition cell to open its inspector. Small JSON can be formatted or displayed raw; text displays as supplied. Binary data shows a bounded hexadecimal preview and can be exported as original bytes. Values larger than 64 KiB initially show a preview and **Load full value**; large JSON is not automatically formatted. Header values use bounded previews. Record export writes only to the location selected in a native save dialog.
 
-Kafi Kafi keeps only the most recent messages up to the configured memory limit. Open **Settings** to select the default start position and set a limit from 100 to 100,000 messages. These defaults apply when you open a new topic message session.
+Native consumer failures stop the session and show an error. Restore the connection and click Start to retry.
 
-## Produce a message
+## Produce a record
 
-1. Click **Produce** in the **Messages** tab.
-2. Enter an optional key.
-3. Leave **Partition (auto)** empty to let Kafka choose a partition, or enter an existing partition number.
-4. Enter the text or JSON value.
-5. Click **Send message**.
+Open the topic's **Produce** section. Enter an optional key, optional partition, value and optional headers as one `name=value` per line, then click **Send record**. Kafka's acknowledgement shows partition, offset and timestamp. An empty key is sent as null; an empty value is zero-length text. Enable **Null value (tombstone)** to send a null value explicitly. Production reuses the active connection's producer.
 
-After Kafka acknowledges the record, Kafi Kafi shows its partition and offset. An empty key is sent as `null`; an empty value is sent as a zero-byte value.
-
-Connection, polling, and production errors appear beside the affected action. Polling retries after the consumer poll interval. To retry production, correct the input or restore the connection and click **Send message** again.
+A delivery timeout may be ambiguous: verify whether the record arrived before retrying to avoid an unintended duplicate.

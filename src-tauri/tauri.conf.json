@@ -1,0 +1,12 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Kafi Kafi",
+  "version": "0.2.0",
+  "identifier": "com.kafikafi.desktop",
+  "build": {"beforeDevCommand":"pnpm dev","devUrl":"http://127.0.0.1:1420","beforeBuildCommand":"pnpm build","frontendDist":"../dist"},
+  "app": {
+    "windows": [{"label":"main","create":false,"title":"Kafi Kafi","width":1280,"height":800,"minWidth":900,"minHeight":600}],
+    "security": {"csp":"default-src 'self'; connect-src ipc: http://ipc.localhost; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'"}
+  },
+  "bundle": {"active":true,"targets":["nsis","dmg","appimage"],"category":"DeveloperTool","shortDescription":"A compact Kafka operator console","windows":{"webviewInstallMode":{"type":"downloadBootstrapper"}}}
+}

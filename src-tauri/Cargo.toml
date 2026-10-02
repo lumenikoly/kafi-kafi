@@ -1,0 +1,40 @@
+[package]
+name = "kafi-kafi"
+version = "0.2.0"
+edition = "2024"
+rust-version = "1.90"
+
+[lib]
+name = "kafi_kafi"
+crate-type = ["lib", "cdylib", "staticlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.7", features = [] }
+
+[dependencies]
+tauri = { version = "2.12", features = [] }
+tauri-plugin-dialog = "2"
+tokio = { version = "1", features = ["full"] }
+tokio-util = { version = "0.7", features = ["rt"] }
+rdkafka = { version = "0.39", features = ["cmake-build", "ssl-vendored"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+uuid = { version = "1", features = ["v4", "serde"] }
+keyring = { version = "3", features = ["windows-native", "apple-native", "sync-secret-service", "crypto-rust"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+base64 = "0.22"
+aes-gcm = "0.10"
+pbkdf2 = "0.12"
+sha2 = "0.10"
+zeroize = { version = "1", features = ["derive"] }
+tempfile = "3"
+dirs = "6"
+ts-rs = { version = "11", features = ["serde-json-impl"] }
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+strip = true
+panic = "abort"

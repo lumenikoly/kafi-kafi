@@ -1,27 +1,17 @@
 # Inspect and manage consumer groups
 
-The **Consumer Groups** workspace shows each group's state, active members, assignments, committed offsets, end offsets, and lag by partition.
+Consumer Groups lists group state, active member count and the topics represented by active assignments. Selecting a group loads members, client IDs/hosts, assignments, committed offsets, end offsets and partition lag. Refresh is manual.
 
 ## Inspect a group
 
-1. Connect to a Kafka cluster and open **Consumer Groups**.
-2. Search by group ID or click **Refresh** to reload the list.
-3. Select a group to view its details.
-
-An empty member list means the latest group details contain no active members. A group can exist without committed offsets, in which case there is no lag table to display.
+Connect, open **Consumer Groups**, search by group ID and select its name. Empty member lists indicate no active members in the latest response. Empty groups may still retain committed offsets. A group's list topic count describes active assignments; the detail finds commits across cluster topics even without assignments.
 
 ## Reset offsets
 
-Resetting offsets changes where consumers in the group continue reading. Stop all consumers that use the group before making this change.
+Stop all members that use the group before resetting its offsets. Enter a topic and optional partition, select earliest/latest/offset/timestamp, and supply an absolute offset or local date/time when requested. Click **Preview reset** to review the group, affected partitions, old offsets and new offsets. Confirm to apply that exact preview.
 
-1. Select the group and click **Reset offsets**.
-2. Enter a topic.
-3. Choose **Earliest**, **Latest**, **Offset**, or **Timestamp**.
-4. Enter a non-negative absolute offset or Unix timestamp in milliseconds when the selected mode requires it.
-5. Confirm the reset.
-
-The reset applies to every partition of the topic. Timestamp mode uses the first available offset at or after the requested time; if a partition has no later record, it uses that partition's end offset. Kafka validation errors remain visible so you can correct the input or stop active consumers and retry.
+Timestamp mode chooses the first record at or after the requested time, or the partition end when no later record exists. The backend refuses a reset if the active connection changed, the preview expired, members became active, or committed offsets differ from the preview. Generate and review a fresh preview after such a failure. Kafka remains authoritative for concurrent group changes and permissions.
 
 ## Delete a group
 
-Select the group, click **Delete group**, and confirm. This removes the group and its committed offsets. Kafka rejects the request while the group has active members. After a successful deletion, Kafi Kafi reloads the group list.
+Click **Delete group**, review the selected group and confirm. The backend checks for active members and Kafka rejects groups it cannot delete. Successful deletion reloads the list and clears the selected group. Deletion removes the group's committed offsets, not topic records.
