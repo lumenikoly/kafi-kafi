@@ -1,6 +1,6 @@
 # Develop the Tauri application
 
-Install Node 22.18.0, pnpm 11.25.0 and the Rust toolchain pinned in `rust-toolchain.toml`. Native build machines need a C/C++ compiler, CMake and Perl. Windows needs the MSVC build tools and native Strawberry Perl; Cygwin/MSYS Perl cannot build the vendored OpenSSL library. Linux also needs WebKitGTK 4.1, appindicator, librsvg, patchelf and D-Bus development packages. macOS needs Xcode command-line tools.
+Install Node 22.18.0, pnpm 11.25.0 and the Rust toolchain pinned in `rust-toolchain.toml`. Native build machines need a C/C++ compiler, CMake and Perl. Windows needs the MSVC build tools and native Strawberry Perl; Cygwin/MSYS Perl cannot build the vendored OpenSSL library. Linux also needs WebKitGTK 4.1, appindicator, librsvg, patchelf, D-Bus and libcurl development packages. On Ubuntu, install `libcurl4-openssl-dev`: the locked librdkafka build configuration requires `curl/curl.h` even when its CURL transport is disabled. macOS needs Xcode command-line tools.
 
 On Windows, dot-source `scripts/native-env.ps1` in PowerShell before the build commands. It loads the installed Visual Studio x64 environment and places native Strawberry Perl and CMake before MSYS/Cygwin tools in the process PATH. The optional local portable Perl location is `.tmp/toolchain/strawberry-perl/perl/bin`.
 
