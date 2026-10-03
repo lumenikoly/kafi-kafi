@@ -2,22 +2,22 @@
 name: Kafi Kafi
 description: A compact operator console for daily Kafka work.
 colors:
-  cobalt-focus: "#5B8CFF"
-  graphite-background: "#0B0D10"
-  graphite-sidebar: "#0F1217"
-  graphite-surface: "#14181F"
-  graphite-elevated: "#1B2028"
-  graphite-hover: "#232A34"
-  divider: "#252B34"
+  interaction: "#D4D9E1"
+  graphite-background: "#191A1C"
+  graphite-sidebar: "#1E1F22"
+  graphite-surface: "#1E1F22"
+  graphite-elevated: "#242529"
+  graphite-hover: "#2B2D31"
+  divider: "#3B3E44"
   text-primary: "#F4F7FA"
   text-secondary: "#B4BDC9"
-  text-muted: "#7F8998"
+  text-muted: "#929DAB"
   status-success: "#5CCB8A"
   status-warning: "#F6C177"
   status-error: "#FF7A7A"
 typography:
   headline:
-    fontSize: "20px"
+    fontSize: "19px"
     fontWeight: 600
     lineHeight: "26px"
   body:
@@ -52,36 +52,34 @@ components:
 
 ## Overview
 
-**Creative North Star: "Operator Console"**
-
-Kafi Kafi is a quiet, high-density technical workspace. It borrows the speed and spatial discipline of database IDEs without copying their visual noise. Operational state, resource names, numeric data, and the active selection always outrank decoration.
+Kafi Kafi is a compact workspace for Kafka operators. Its neutral palette, compact controls, and separation of navigation from actions take inspiration from [bb](https://github.com/get-bb/bb). Operational state, resource names, numeric data, and the active selection determine the visual hierarchy.
 
 **Key Characteristics:**
 
 - compact icon navigation with accessible descriptions and tooltips;
 - persistent cluster status above the workspace;
 - dense tabs, lists, tables, and inspectors separated by tonal planes;
-- one cobalt interaction color and explicit semantic status colors.
+- neutral interaction states and explicit semantic status colors.
 
 ## Colors
 
-Graphite surfaces reduce glare during long sessions. Cobalt marks focus and selection; mint, amber, and red are reserved for operational meaning.
+Dark mode uses graphite surfaces and a pale primary button; light mode uses white surfaces, a pale gray sidebar, and a dark primary button. Focus and selection follow the neutral foreground color, with green, amber, and red reserved for operational meaning. Text, dividers, hover states, errors and native controls follow the selected theme.
 
-**The Sparse Accent Rule.** Cobalt identifies the current context or primary action. It does not decorate containers.
+Selected navigation, active tabs, and selected rows use a small foreground marker and a subtle background tint. Containers use quiet borders.
 
 ## Typography
 
-The platform sans-serif remains the UI workhorse. Sizes stay between 11px and 20px for desktop density; weight, alignment, and surface contrast create hierarchy.
+Inter Variable is bundled locally for consistent rendering, with the platform sans-serif as a fallback. Sizes stay between 11px and 19px for desktop density; weight, alignment, and surface contrast create hierarchy. Numeric data uses tabular figures.
 
 Use monospaced text only for payloads, offsets, identifiers, configuration values, and other data where character alignment matters.
 
 ## Layout
 
-The application shell uses a 64px icon rail, a 40px cluster-status bar, a 38px tab strip, and the remaining space for the active workspace. Resource-heavy screens should prefer a resource browser, data table, and contextual inspector over dashboards or repeated cards. Standard spacing steps are 4, 8, 12, 16, and 24px.
+The application shell uses a 64px icon rail, a 42px cluster-status bar, a 38px tab strip, and the remaining space for the active workspace. Topic sections use a compact segmented control below the resource heading; refresh and deletion stay beside that heading. Resource-heavy screens use a resource browser, data table, and contextual inspector. Forms pair related fields where space permits. Standard spacing steps are 4, 8, 12, 16, 20, 24, and 32px.
 
 ## Elevation & Depth
 
-The system is flat. Depth comes from adjacent graphite tones and one-pixel dividers, not shadows, glow, blur, or glass.
+The system is flat. Depth comes from adjacent surface tones and one-pixel dividers, not shadows, glow, blur, or glass.
 
 ## Shapes
 
@@ -91,26 +89,26 @@ Controls and compact containers use 4–8px corners. Pills are limited to small 
 
 ### Navigation
 
-The primary rail uses 44px icon buttons inside a 64px column. The active destination gains a darker surface and cobalt icon. Every icon-only action has an accessible description and tooltip.
+The primary rail uses 42px icon buttons inside a 64px column, with consistent outline SVG icons. The active destination gains a foreground icon, a subtle tint, and a two-pixel side marker. Settings stays at the bottom. Every icon-only action has an accessible description and tooltip.
 
 ### Tabs
 
-Tabs are 38px high with a two-pixel cobalt top indicator for the active tab. Close actions remain compact but independently focusable.
+Tabs are 38px high with a two-pixel foreground bottom indicator for the active tab. Close actions remain compact but independently focusable.
 
 ### Buttons and inputs
 
-Text remains on primary, destructive, and ambiguous actions. Familiar secondary actions may use icons. Inputs use subtle default borders and a cobalt focus border.
+Standard form controls are 32px high or taller, with six-pixel corners; status, segmented, profile-row and table actions use compact sizing. Primary actions use a filled foreground color; secondary actions use an outline or a borderless treatment. Text remains on primary, destructive, and ambiguous actions. Familiar secondary actions may use icons. Focus uses a visible two-pixel outline. Confirmation buttons name the action, such as "Delete topic" or "Import profiles". Hover transitions are brief and respect reduced-motion preferences.
 
 ### Data surfaces
 
-Tables and lists use aligned columns, compact rows, subtle dividers, and a single selected-row treatment. Inspectors sit beside or below the selected resource instead of opening a modal.
+Tables use left-aligned headers, 32px data rows, subtle dividers, and a single selected-row treatment. In message tables, the value preview uses the remaining flexible width, with a minimum of 100px; metadata columns have fixed widths. Inspectors sit beside the selected resource, with payloads in bounded code blocks.
 
 ## Do's and Don'ts
 
 ### Do:
 
 - **Do** keep cluster and operation status visible near the affected workspace.
-- **Do** use familiar Material icons for routine actions and expose their names on hover.
+- **Do** use consistent outline SVG icons for routine actions and expose their names on hover.
 - **Do** keep destructive actions explicit and labelled.
 
 ### Don't:
@@ -122,4 +120,4 @@ Tables and lists use aligned columns, compact rows, subtle dividers, and a singl
 
 ## Runtime tokens
 
-The React interface implements these colors as CSS custom properties in src/styles/global.css. Virtual tables and adjacent inspectors carry Kafka data; the interface stores bounded row previews and requests complete records from Rust only on selection. Tauri/Rust/React is the only application implementation.
+The React interface implements these colors as CSS custom properties in src/styles/global.css. The `data-theme` attribute on the document selects dark or light tokens; the choice is stored in the application settings as `layout.theme`. Virtual tables and adjacent inspectors carry Kafka data; the interface stores bounded row previews and requests complete records from Rust only on selection. Tauri/Rust/React is the only application implementation.

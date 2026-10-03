@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { Icon } from "../../components/Icon";
 import { Confirmation, ErrorBanner, Field } from "../../components/Primitives";
 import { command, errorMessage } from "../../ipc/client";
 import type { Profile, SaveProfile } from "../../ipc/types";
@@ -84,7 +85,7 @@ export function Connections({
       } else {
         const result = await command("test_connection", { request: request() });
         setNotice(
-          `Connected to ${result.clusterId ?? "cluster"}: ${result.brokers.length} brokers.`,
+          `Connected to ${result.clusterId ?? "cluster"}: ${result.brokers.length} broker${result.brokers.length === 1 ? "" : "s"}.`,
         );
       }
     } catch (e) {
@@ -119,21 +120,33 @@ export function Connections({
           <h2>Connections</h2>
           <button
             type="button"
+            className="ghost"
             onClick={() => {
               edit(fresh());
             }}
           >
+            <Icon name="Plus" />
             New
           </button>
         </div>
         {profiles.map((p) => (
-          <div className="profile-row" key={p.id}>
-            <button type="button" onClick={() => edit(p)}>
+          <div
+            className={`profile-row ${profile.id === p.id ? "selected" : ""}`}
+            key={p.id}
+          >
+            <button
+              type="button"
+              aria-label={p.name}
+              title={p.name}
+              onClick={() => edit(p)}
+            >
               {p.name}
               {active === p.id ? " ●" : ""}
+              <small>{p.bootstrapServers.join(", ")}</small>
             </button>
             <button
               type="button"
+              className="ghost"
               disabled={busy}
               onClick={() => {
                 setBusy(true);
@@ -147,9 +160,11 @@ export function Connections({
             <button
               type="button"
               aria-label={`Delete ${p.name}`}
+              className="icon-button danger"
+              title={`Delete ${p.name}`}
               onClick={() => setRemove(p)}
             >
-              ×
+              <Icon name="Delete" />
             </button>
           </div>
         ))}
@@ -179,39 +194,41 @@ export function Connections({
             }
           />
         </Field>
-        <Field label="Client ID">
-          <input
-            aria-label="Client ID"
-            value={profile.clientId ?? ""}
-            onChange={(e) =>
-              setProfile({ ...profile, clientId: e.target.value || null })
-            }
-          />
-        </Field>
-        <Field label="Security protocol">
-          <select
-            aria-label="Security protocol"
-            value={profile.securityProtocol}
-            onChange={(e) =>
-              setProfile({
-                ...profile,
-                securityProtocol: e.target.value,
-                sasl: e.target.value.startsWith("SASL")
-                  ? (profile.sasl ?? {
-                      mechanism: "PLAIN",
-                      username: "",
-                      passwordRef: null,
-                    })
-                  : null,
-                tls: e.target.value.endsWith("SSL") ? tls : null,
-              })
-            }
-          >
-            {["PLAINTEXT", "SSL", "SASL_PLAINTEXT", "SASL_SSL"].map((p) => (
-              <option key={p}>{p}</option>
-            ))}
-          </select>
-        </Field>
+        <div className="form-grid">
+          <Field label="Client ID">
+            <input
+              aria-label="Client ID"
+              value={profile.clientId ?? ""}
+              onChange={(e) =>
+                setProfile({ ...profile, clientId: e.target.value || null })
+              }
+            />
+          </Field>
+          <Field label="Security protocol">
+            <select
+              aria-label="Security protocol"
+              value={profile.securityProtocol}
+              onChange={(e) =>
+                setProfile({
+                  ...profile,
+                  securityProtocol: e.target.value,
+                  sasl: e.target.value.startsWith("SASL")
+                    ? (profile.sasl ?? {
+                        mechanism: "PLAIN",
+                        username: "",
+                        passwordRef: null,
+                      })
+                    : null,
+                  tls: e.target.value.endsWith("SSL") ? tls : null,
+                })
+              }
+            >
+              {["PLAINTEXT", "SSL", "SASL_PLAINTEXT", "SASL_SSL"].map((p) => (
+                <option key={p}>{p}</option>
+              ))}
+            </select>
+          </Field>
+        </div>
         {profile.sasl && (
           <>
             <Field label="SASL mechanism">
@@ -361,6 +378,7 @@ export function Connections({
       {remove && (
         <Confirmation
           title="Delete connection profile"
+          confirmLabel="Delete profile"
           onCancel={() => setRemove(null)}
           busy={busy}
           onConfirm={() => {

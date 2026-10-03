@@ -24,4 +24,4 @@ For the system boundary and module responsibilities, see the [architecture overv
 
 The Tauri runtime uses versioned JSON in the platform application-data directory and the system credential service. [Credential import and recovery](security/credentials.md) explains explicit migration from existing legacy user files.
 
-For source builds and verification, see [development](development.md). For artifacts and release gates, see [releasing](releasing.md).
+For source builds and verification, see [development](development.md). For artifacts and release gates, see [releasing](releasing.md). For version changes and known gaps, see [release notes](releases/index.md).

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { columnsFor, DataTable } from "../components/DataTable";
+import { Icon } from "../components/Icon";
 import { ErrorBanner } from "../components/Primitives";
 import { Connections } from "../features/connections/Connections";
 import { Groups } from "../features/groups/Groups";
@@ -21,12 +22,12 @@ const defaults: AppSettings = {
   layout: {},
 };
 const navigation = [
-  ["Connections", "◈"],
-  ["Cluster", "◎"],
-  ["Brokers", "▤"],
-  ["Topics", "≡"],
-  ["Consumer Groups", "◉"],
-  ["Settings", "⚙"],
+  "Connections",
+  "Cluster",
+  "Brokers",
+  "Topics",
+  "Consumer Groups",
+  "Settings",
 ] as const;
 export function App() {
   const [page, setPage] = useState("Connections");
@@ -37,6 +38,11 @@ export function App() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [legacy, setLegacy] = useState(false);
+  const currentPage = page === "Topic" ? "Topics" : page;
+  useEffect(() => {
+    document.documentElement.dataset.theme =
+      settings.layout.theme === "light" ? "light" : "dark";
+  }, [settings.layout.theme]);
   useEffect(() => {
     requestAnimationFrame(() => {
       void command("ui_ready").catch(() => {});
@@ -90,19 +96,20 @@ export function App() {
         <div className="brand" title="Kafi Kafi">
           K
         </div>
-        {navigation.map(([name, icon]) => (
+        {navigation.map((name) => (
           <button
             type="button"
             key={name}
             title={name}
             aria-label={name}
-            className={page === name ? "active" : ""}
+            aria-current={currentPage === name ? "page" : undefined}
+            className={currentPage === name ? "active" : ""}
             onClick={() => {
               setPage(name);
               setActiveTopic(null);
             }}
           >
-            <span aria-hidden="true">{icon}</span>
+            <Icon name={name} />
           </button>
         ))}
       </nav>
@@ -112,7 +119,7 @@ export function App() {
           <strong>Kafi Kafi</strong>
           <span>
             {cluster
-              ? `${cluster.clusterId ?? "Kafka cluster"} · ${cluster.brokers.length} brokers`
+              ? `${cluster.clusterId ?? "Kafka cluster"} · ${cluster.brokers.length} broker${cluster.brokers.length === 1 ? "" : "s"}`
               : "Disconnected"}
           </span>
           <span className="grow" />
@@ -134,7 +141,7 @@ export function App() {
               Disconnect
             </button>
           )}
-          <span>{busy ? "Working…" : "Local desktop"}</span>
+          {busy && <output>Working…</output>}
         </header>
         <div className="tabs" role="tablist" aria-label="Workspace">
           <button
@@ -164,6 +171,7 @@ export function App() {
               <button
                 type="button"
                 aria-label={`Close ${topic}`}
+                title={`Close ${topic}`}
                 onClick={() => close(topic)}
               >
                 ×
@@ -185,7 +193,6 @@ export function App() {
           {!cluster && !["Connections", "Settings"].includes(page) && (
             <div className="empty">
               <h2>Connect to Kafka</h2>
-              <p>Select a profile to inspect your cluster.</p>
               <button type="button" onClick={() => setPage("Connections")}>
                 Open connections
               </button>
@@ -255,7 +262,7 @@ export function App() {
             ))}
           {legacy && page === "Connections" && (
             <div className="legacy-notice">
-              Kotlin configuration found.{" "}
+              Existing profiles found.{" "}
               <button
                 type="button"
                 onClick={() => {

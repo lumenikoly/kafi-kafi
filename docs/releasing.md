@@ -4,7 +4,9 @@ Start the `Tauri release` workflow manually from `main` with a new SemVer tag, `
 
 1. Merge the release changes into `main`, including the matching version in all three manifests.
 2. Open GitHub **Actions → Tauri release → Run workflow**.
-3. Select **main**, enter the **tag** (for example `v0.2.0`), and click **Run workflow**. Do not create or push the tag beforehand.
+3. Select **main**, enter the **tag** (for example `v1.1.0`), and click **Run workflow**. Do not create or push the tag beforehand.
+
+The next prepared version is [1.1.0](releases/1.1.0.md). Its release notes distinguish implemented changes from the remaining publication gates.
 
 After all checks and platform packages succeed, the workflow creates the tag on the exact commit selected when the run started and publishes a GitHub Release with the packages, checksum manifests and generated release notes. Pushing a tag does not start a release. Release runs are serialized; a new run does not cancel one already in progress. The workflow must be merged into the repository's default branch before GitHub shows the manual launch button.
 

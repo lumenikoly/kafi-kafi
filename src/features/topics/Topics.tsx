@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { columnsFor, DataTable } from "../../components/DataTable";
+import { Icon } from "../../components/Icon";
 import { Confirmation, ErrorBanner, Field } from "../../components/Primitives";
 import { command, errorMessage } from "../../ipc/client";
 import type {
@@ -212,19 +213,10 @@ export function TopicWorkspace({
   }, [refresh]);
   return (
     <section className="page">
-      <div className="toolbar">
+      <div className="toolbar page-heading">
         <h2>{topic}</h2>
-        {["Messages", "Partitions", "Configuration", "Produce"].map((s) => (
-          <button
-            className={section === s ? "active" : ""}
-            type="button"
-            key={s}
-            onClick={() => setSection(s)}
-          >
-            {s}
-          </button>
-        ))}
         <button type="button" onClick={() => void refresh()}>
+          <Icon name="Refresh" />
           Refresh
         </button>
         <button
@@ -232,9 +224,23 @@ export function TopicWorkspace({
           type="button"
           onClick={() => setDeleting(true)}
         >
+          <Icon name="Delete" />
           Delete topic
         </button>
       </div>
+      <fieldset className="section-tabs" aria-label="Topic sections">
+        {["Messages", "Partitions", "Configuration", "Produce"].map((s) => (
+          <button
+            className={section === s ? "active" : ""}
+            aria-pressed={section === s}
+            type="button"
+            key={s}
+            onClick={() => setSection(s)}
+          >
+            {s}
+          </button>
+        ))}
+      </fieldset>
       <ErrorBanner message={error} />
       <div className="fill" hidden={section !== "Messages"}>
         <Messages topic={topic} settings={settings} />
@@ -290,6 +296,7 @@ export function TopicWorkspace({
       {deleting && (
         <Confirmation
           title="Delete topic"
+          confirmLabel="Delete topic"
           busy={busy}
           onCancel={() => setDeleting(false)}
           onConfirm={() => {

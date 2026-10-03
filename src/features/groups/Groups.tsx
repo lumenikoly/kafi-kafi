@@ -201,6 +201,7 @@ export function Groups() {
       {preview && (
         <Confirmation
           title="Reset consumer group offsets"
+          confirmLabel="Reset offsets"
           busy={busy}
           onCancel={() => setPreview(null)}
           onConfirm={() => {
@@ -244,6 +245,7 @@ export function Groups() {
       {remove && detail && (
         <Confirmation
           title="Delete consumer group"
+          confirmLabel="Delete group"
           busy={busy}
           onCancel={() => setRemove(false)}
           onConfirm={() => {

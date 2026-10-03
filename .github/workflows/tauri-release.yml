@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Release tag matching the application version (for example v0.2.0)'
+        description: 'Release tag matching the application version (for example v1.1.0)'
         required: true
         type: string
 concurrency:

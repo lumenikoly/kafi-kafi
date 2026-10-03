@@ -20,6 +20,7 @@ export function DataTable<T>({
   label: string;
 }) {
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [selected, setSelected] = useState<T | null>(null);
   const parent = useRef<HTMLDivElement>(null);
   const table = useReactTable({
     data,
@@ -36,10 +37,19 @@ export function DataTable<T>({
     estimateSize: () => 32,
     overscan: 8,
   });
-  const width = `repeat(${columns.length}, minmax(90px, 1fr))`;
+  const width = columns
+    .map((column) => (column.size ? `${column.size}px` : "minmax(100px, 1fr)"))
+    .join(" ");
+  const minWidth = columns.reduce(
+    (sum, column) => sum + (column.size ?? 100),
+    0,
+  );
   return (
     <div className="table table-scroll" ref={parent}>
-      <table aria-label={label} style={{ display: "grid", width: "100%" }}>
+      <table
+        aria-label={label}
+        style={{ display: "grid", width: "100%", minWidth }}
+      >
         <thead
           style={{ display: "grid", position: "sticky", top: 0, zIndex: 1 }}
         >
@@ -50,7 +60,17 @@ export function DataTable<T>({
               style={{ gridTemplateColumns: width }}
             >
               {group.headers.map((header) => (
-                <th scope="col" key={header.id}>
+                <th
+                  scope="col"
+                  key={header.id}
+                  aria-sort={
+                    header.column.getIsSorted() === "asc"
+                      ? "ascending"
+                      : header.column.getIsSorted() === "desc"
+                        ? "descending"
+                        : "none"
+                  }
+                >
                   <button
                     type="button"
                     onClick={header.column.getToggleSortingHandler()}
@@ -83,7 +103,7 @@ export function DataTable<T>({
             return (
               <tr
                 key={row.id}
-                className={`table-row ${onSelect ? "selectable" : ""}`}
+                className={`table-row ${onSelect ? "selectable" : ""} ${selected === row.original ? "selected" : ""}`}
                 style={{
                   position: "absolute",
                   top: 0,
@@ -98,7 +118,10 @@ export function DataTable<T>({
                     {onSelect && index === 0 ? (
                       <button
                         type="button"
-                        onClick={() => onSelect(row.original)}
+                        onClick={() => {
+                          setSelected(row.original);
+                          onSelect(row.original);
+                        }}
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
