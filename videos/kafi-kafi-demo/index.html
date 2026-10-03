@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1600, height=1000">
+    <title>Kafi Kafi native UI captures</title>
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      html, body { margin: 0; width: 100%; height: 100%; background: #10131b; }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; }
+      .clip { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-46vm" id="root" data-composition-id="main" data-start="0" data-width="1600" data-height="1000" data-duration="12">
+      <img data-hf-id="hf-ku32" id="connections-capture" class="clip" data-start="0" data-duration="4" data-track-index="0" src="assets/connections.png" alt="Native Kafi Kafi connection test">
+      <img data-hf-id="hf-wkit" id="inspector-capture" class="clip" data-start="4" data-duration="4" data-track-index="0" src="assets/message-inspector.png" alt="Native Kafi Kafi record inspection">
+      <img data-hf-id="hf-z75s" id="stream-capture" class="clip" data-start="8" data-duration="4" data-track-index="0" src="assets/message-stream.png" alt="Native Kafi Kafi bounded message table">
+    </div>
+    <script>
+      const timeline = gsap.timeline({ paused: true });
+      timeline.to({}, { duration: 12 });
+      window.__timelines["main"] = timeline;
+    </script>
+  </body>
+</html>

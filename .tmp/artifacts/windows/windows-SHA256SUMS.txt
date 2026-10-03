@@ -1,0 +1,2 @@
+d51a3704210addda9eb7cb2207684a8fe933ed13d4fbcc4a1bfdc3b4ee459348  Kafi Kafi_0.2.0_x64-setup.exe
+d3758ed192ce5227c77aa12c991a317dc2fd48d8753824b085da24c0c13a3b67  kafi-kafi-0.2.0-windows-x64.zip

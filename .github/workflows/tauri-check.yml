@@ -1,0 +1,92 @@
+name: Tauri checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_call:
+permissions:
+  contents: read
+jobs:
+  frontend-check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.25.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.18.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint && pnpm typecheck && pnpm test && pnpm build
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:browser
+  rust-check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf cmake perl libdbus-1-dev libcurl4-openssl-dev
+      - run: rustup toolchain install 1.98.1 --profile minimal --component rustfmt --component clippy
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.25.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.18.0
+      - run: pnpm install --frozen-lockfile && pnpm build
+      - run: cargo fmt --manifest-path src-tauri/Cargo.toml --check
+      - run: cargo clippy --manifest-path src-tauri/Cargo.toml --locked --all-targets --all-features -- -D warnings
+  rust-test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf cmake perl libdbus-1-dev libcurl4-openssl-dev
+      - run: rustup toolchain install 1.98.1 --profile minimal
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.25.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.18.0
+      - run: pnpm install --frozen-lockfile && pnpm build
+      - run: cargo test --manifest-path src-tauri/Cargo.toml --locked --lib --test storage_and_secrets --test consumer_buffer
+      - run: test -z "$(git status --porcelain -- src/ipc/generated)"
+  build:
+    needs: [frontend-check, rust-check, rust-test]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {os: windows-2025, target: x86_64-pc-windows-msvc}
+          - {os: ubuntu-24.04, target: x86_64-unknown-linux-gnu}
+          - {os: macos-15-intel, target: x86_64-apple-darwin}
+          - {os: macos-15, target: aarch64-apple-darwin}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.25.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.18.0
+          cache: pnpm
+      - if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf cmake perl libdbus-1-dev libcurl4-openssl-dev
+      - if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          choco install strawberryperl cmake --yes --no-progress
+          'C:\Strawberry\perl\bin' | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+      - run: rustup toolchain install 1.98.1 --profile minimal
+      - run: rustup target add ${{ matrix.target }} --toolchain 1.98.1
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm tauri build --target ${{ matrix.target }} --no-bundle

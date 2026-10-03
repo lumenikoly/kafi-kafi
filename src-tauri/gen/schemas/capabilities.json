@@ -1,0 +1,1 @@
+{"main":{"identifier":"main","description":"Local application IPC only; dialogs are mediated by Rust commands.","local":true,"windows":["main"],"permissions":["core:default"]}}

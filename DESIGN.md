@@ -17,34 +17,34 @@ colors:
   status-error: "#FF7A7A"
 typography:
   headline:
-    fontSize: "20sp"
+    fontSize: "20px"
     fontWeight: 600
-    lineHeight: "26sp"
+    lineHeight: "26px"
   body:
-    fontSize: "13sp"
+    fontSize: "13px"
     fontWeight: 400
-    lineHeight: "18sp"
+    lineHeight: "18px"
   label:
-    fontSize: "12sp"
+    fontSize: "12px"
     fontWeight: 500
-    lineHeight: "16sp"
+    lineHeight: "16px"
 rounded:
-  xs: "4dp"
-  sm: "6dp"
-  md: "8dp"
+  xs: "4px"
+  sm: "6px"
+  md: "8px"
 spacing:
-  xs: "4dp"
-  sm: "8dp"
-  md: "12dp"
-  lg: "16dp"
-  xl: "24dp"
+  xs: "4px"
+  sm: "8px"
+  md: "12px"
+  lg: "16px"
+  xl: "24px"
 components:
   navigation-rail:
     backgroundColor: "{colors.graphite-sidebar}"
-    width: "64dp"
+    width: "64px"
   tab:
     backgroundColor: "{colors.graphite-surface}"
-    height: "38dp"
+    height: "38px"
     rounded: "{rounded.xs}"
 ---
 
@@ -71,13 +71,13 @@ Graphite surfaces reduce glare during long sessions. Cobalt marks focus and sele
 
 ## Typography
 
-The platform sans-serif remains the UI workhorse. Sizes stay between 11sp and 20sp for desktop density; weight, alignment, and surface contrast create hierarchy.
+The platform sans-serif remains the UI workhorse. Sizes stay between 11px and 20px for desktop density; weight, alignment, and surface contrast create hierarchy.
 
 Use monospaced text only for payloads, offsets, identifiers, configuration values, and other data where character alignment matters.
 
 ## Layout
 
-The application shell uses a 64dp icon rail, a 40dp cluster-status bar, a 38dp tab strip, and the remaining space for the active workspace. Resource-heavy screens should prefer a resource browser, data table, and contextual inspector over dashboards or repeated cards. Standard spacing steps are 4, 8, 12, 16, and 24dp.
+The application shell uses a 64px icon rail, a 40px cluster-status bar, a 38px tab strip, and the remaining space for the active workspace. Resource-heavy screens should prefer a resource browser, data table, and contextual inspector over dashboards or repeated cards. Standard spacing steps are 4, 8, 12, 16, and 24px.
 
 ## Elevation & Depth
 
@@ -85,17 +85,17 @@ The system is flat. Depth comes from adjacent graphite tones and one-pixel divid
 
 ## Shapes
 
-Controls and compact containers use 4–8dp corners. Pills are limited to small status badges. Large rounded cards and nested cards do not belong in the operator workspace.
+Controls and compact containers use 4–8px corners. Pills are limited to small status badges. Large rounded cards and nested cards do not belong in the operator workspace.
 
 ## Components
 
 ### Navigation
 
-The primary rail uses 44dp icon buttons inside a 64dp column. The active destination gains a darker surface and cobalt icon. Every icon-only action has an accessible description and tooltip.
+The primary rail uses 44px icon buttons inside a 64px column. The active destination gains a darker surface and cobalt icon. Every icon-only action has an accessible description and tooltip.
 
 ### Tabs
 
-Tabs are 38dp high with a two-pixel cobalt top indicator for the active tab. Close actions remain compact but independently focusable.
+Tabs are 38px high with a two-pixel cobalt top indicator for the active tab. Close actions remain compact but independently focusable.
 
 ### Buttons and inputs
 
@@ -118,3 +118,8 @@ Tables and lists use aligned columns, compact rows, subtle dividers, and a singl
 - **Don't** add explanatory copy when placement, iconography, and tooltip already communicate the action.
 - **Don't** use gradients, glow, glass, decorative dashboards, or oversized metric cards.
 - **Don't** introduce a new color when an existing interaction or status role already fits.
+
+
+## Runtime tokens
+
+The React interface implements these colors as CSS custom properties in src/styles/global.css. Virtual tables and adjacent inspectors carry Kafka data; the interface stores bounded row previews and requests complete records from Rust only on selection. Tauri/Rust/React is the only application implementation.

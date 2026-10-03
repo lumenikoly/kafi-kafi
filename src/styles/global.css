@@ -1,0 +1,372 @@
+h2 {
+  font-size: 20px;
+}
+h3 {
+  font-size: 16px;
+}
+h4 {
+  font-size: 13px;
+}
+:root {
+  font-family:
+    Segoe UI,
+    system-ui,
+    sans-serif;
+  font-size: 13px;
+  color-scheme: dark;
+  --bg: #0b0d10;
+  --surface: #14181f;
+  --surface-elevated: #1b2028;
+  --border: #252b34;
+  --text-primary: #f4f7fa;
+  --text-secondary: #b4bdc9;
+  --text-muted: #7f8998;
+  --accent: #5b8cff;
+  --success: #5ccb8a;
+  --warning: #f6c177;
+  --error: #ff7a7a;
+  color: var(--text-primary);
+  background: var(--bg);
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface-elevated);
+  padding: 6px 10px;
+}
+button {
+  cursor: pointer;
+  white-space: nowrap;
+}
+button:hover {
+  background: #232a34;
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+button:focus-visible,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 1px solid var(--accent);
+}
+.primary,
+.active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.danger,
+.error {
+  color: var(--error);
+}
+.app-shell {
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  grid-template-rows: minmax(0, 1fr);
+}
+.nav-rail {
+  background: #0f1217;
+  border-right: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+}
+.nav-rail button {
+  width: 44px;
+  height: 44px;
+  font-size: 22px;
+}
+.brand {
+  height: 38px;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent);
+}
+main {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.status-bar {
+  height: 40px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 12px;
+}
+.status-dot {
+  width: 7px;
+  height: 7px;
+  background: var(--text-muted);
+  border-radius: 50%;
+}
+.status-dot.connected {
+  background: var(--success);
+}
+.grow {
+  flex: 1;
+}
+.tabs {
+  display: flex;
+  height: 38px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  overflow: auto;
+  flex-shrink: 0;
+}
+.tabs > button,
+.tab {
+  border-radius: 0;
+  border: none;
+  border-right: 1px solid var(--border);
+  display: flex;
+}
+.tab.active {
+  border-top: 2px solid var(--accent);
+}
+.tab button {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.workspace {
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+  position: relative;
+}
+.page,
+.messages,
+.topic-workspace {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.page {
+  padding: 16px;
+  gap: 12px;
+}
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+.toolbar h2 {
+  margin: 0 16px 0 0;
+}
+.toolbar input {
+  max-width: 220px;
+}
+.split {
+  display: flex;
+  gap: 16px;
+  height: 100%;
+  min-height: 0;
+}
+.fill {
+  flex: 1;
+  min-height: 0;
+}
+.resource-list {
+  width: 300px;
+  border-right: 1px solid var(--border);
+  padding: 16px;
+  overflow: auto;
+  flex-shrink: 0;
+}
+.profile-row {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+}
+.profile-row > button:first-child {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+.editor {
+  max-width: 820px;
+  overflow: auto;
+  padding: 24px;
+  width: 100%;
+}
+.field {
+  display: block;
+  margin: 12px 0;
+  color: var(--text-secondary);
+}
+.field > span:first-child {
+  display: block;
+  margin-bottom: 6px;
+}
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  max-width: 100%;
+}
+.field .toolbar input {
+  flex: 1;
+}
+.field textarea {
+  min-height: 80px;
+}
+.payload-editor {
+  min-height: 200px;
+  font-family: Consolas, monospace;
+}
+.table {
+  flex: 1;
+  min-width: 0;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.table-scroll {
+  overflow: auto;
+  flex: 1;
+  min-height: 0;
+}
+.table-row {
+  display: grid;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+  font-size: 12px;
+}
+.table-row > td,
+.table-row > th {
+  padding: 5px 10px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.table-head {
+  height: 32px;
+  background: var(--surface-elevated);
+  color: var(--text-secondary);
+}
+.table-head button,
+.selectable button {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+}
+.selectable:hover {
+  background: #232a34;
+}
+.inspector {
+  width: 400px;
+  overflow: auto;
+  border-left: 1px solid var(--border);
+  padding: 16px;
+  background: var(--surface);
+  flex-shrink: 0;
+}
+.group-inspector {
+  width: 55%;
+}
+.inspector pre {
+  max-height: 350px;
+  overflow: auto;
+  font-size: 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: Consolas, monospace;
+}
+.group-inspector .table {
+  height: 220px;
+}
+.messages {
+  gap: 8px;
+}
+.error {
+  padding: 8px 16px;
+  background: #341e24;
+  border-bottom: 1px solid var(--error);
+}
+.empty {
+  padding: 40px;
+  color: var(--text-muted);
+}
+.muted {
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: #0009;
+  display: grid;
+  place-items: center;
+  z-index: 10;
+}
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 24px;
+  width: min(700px, 90vw);
+  max-height: 85vh;
+  overflow: auto;
+  border-radius: 6px;
+}
+.modal h2 {
+  margin-top: 0;
+}
+.modal table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+}
+.modal td,
+.modal th {
+  border-bottom: 1px solid var(--border);
+  padding: 8px;
+  text-align: left;
+}
+dl {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 8px;
+}
+dd {
+  margin: 0;
+  font-family: Consolas, monospace;
+}
+.legacy-notice {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  padding: 12px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+}
+.workspace [hidden],
+.page [hidden] {
+  display: none;
+}

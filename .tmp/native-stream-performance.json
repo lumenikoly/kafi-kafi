@@ -1,0 +1,72 @@
+{
+  "test": "native final-build 100k sustained stream via WebView2 CDP",
+  "recorded_at_local": "2026-10-02T07:52:36.1278926-07:00",
+  "executable": {
+    "path": "src-tauri/target-release/release/kafi-kafi.exe",
+    "length_bytes": 13206528,
+    "last_write_time": "2026-10-02 07:27:46 local"
+  },
+  "broker": "127.0.0.1:19092",
+  "topic": "codex_final_stream_20261002_perf",
+  "profile": "Codex final stream smoke 20261002",
+  "producer": {
+    "image": "apache/kafka:3.9.1",
+    "network": "host",
+    "heap": "-Xms64m -Xmx128m",
+    "records_sent": 100000,
+    "record_size_bytes": 1024,
+    "target_records_per_second": 10000,
+    "actual_records_per_second": 8700.191404,
+    "average_latency_ms": 1605.84,
+    "p50_latency_ms": 1636,
+    "p95_latency_ms": 2140,
+    "p99_latency_ms": 2172,
+    "p999_latency_ms": 2179,
+    "max_latency_ms": 2183,
+    "exit_code": 0
+  },
+  "kafka": {
+    "partition_0_end_offset": 100000,
+    "records_at_end_offset": 100000
+  },
+  "ui": {
+    "status": "running",
+    "retained": 10000,
+    "evicted": 90000,
+    "mounted_tbody_rows": 26,
+    "table_viewport_height_px": 565,
+    "table_scroll_height_px": 320032,
+    "viewport_bottom_px": 784,
+    "window_height_px": 800
+  },
+  "frame_sampling": {
+    "frames": 47607,
+    "intervals": 47606,
+    "sampling_window_ms": 724711,
+    "max_inter_frame_gap_ms": 60.5,
+    "started_before_producer": true,
+    "ended_after_producer": true,
+    "includes_idle_before_and_after": true
+  },
+  "process_tree_memory": {
+    "process_count": 7,
+    "working_set_mib": 570,
+    "measurement_point": "near stream completion",
+    "largest_process": "WebView2 renderer",
+    "largest_process_working_set_mib": 247.3
+  },
+  "cleanup": {
+    "consumer_stopped": true,
+    "topic_deleted": true,
+    "profile_deleted": true,
+    "app_stopped": true,
+    "integration_fixture_stopped": false,
+    "local_kafka_manager_tested": false
+  },
+  "notes": [
+    "The frame sample spans the full browser-window period before and after the producer, not a stream-only interval.",
+    "Native view was already constrained without CSS injection; 26 message rows were mounted in the 565 px viewport.",
+    "Resize and away/back workspace regression is also covered by the Playwright Vite mock test.",
+    "Integration fixture remains running until migration test owner confirms its work is complete."
+  ]
+}

@@ -1,61 +1,38 @@
 # Install, run, and connect
 
-Use a native release for normal use or run the application from source for development. Either option requires a Kafka bootstrap address and any credentials required by that cluster.
+Use the Tauri source build for development. Check release notes when downloading an older published version for its runtime and supported migration formats.
 
-## Install a release
+## Run the new application
 
-Published releases provide native files on the [GitHub Releases](https://github.com/lumenikoly/kafi-kafi/releases) page:
+Follow [development prerequisites](../development.md), then run:
 
-- Linux: download the AppImage, make it executable, and run it.
-- Windows: use the MSI installer or extract the portable ZIP.
-- macOS: open the DMG image and launch Kafi Kafi.
-
-Linux AppImage example:
-
-```bash
-chmod +x KafiKafi-*.AppImage
-./KafiKafi-*.AppImage
+```sh
+pnpm install --frozen-lockfile
+pnpm tauri dev
 ```
 
-## Run from source
-
-Install JDK 25 and run the included Gradle wrapper:
-
-```bash
-./gradlew :app-desktop:run
-```
-
-On Windows, use:
-
-```powershell
-gradlew.bat :app-desktop:run
-```
-
-The wrapper downloads the configured Gradle version automatically. Podman or Docker is optional unless you use the local Kafka launcher.
+Production packages contain the interface and native Kafka client. They use the operating system's WebView; a JVM is not required.
 
 ## Connect to a cluster
 
-1. Open **Connections** from the plug icon in the left navigation rail. Hover over an icon to see its name.
-2. Click the **+** icon in the profile pane and enter a profile name and one or more comma-separated **Bootstrap Servers**, such as `broker-1:9092,broker-2:9092`.
-3. Select the security protocol required by the cluster. For SASL or SSL, complete the credential and certificate fields that appear.
-4. Click **Test Connection**. A successful result shows the topic count and connection latency.
-5. Click **Save**, then **Connect**.
+1. Open **Connections**, then **New**.
+2. Enter a name and comma-separated bootstrap servers such as `broker-1:9092,broker-2:9092`.
+3. Select PLAINTEXT, SSL, SASL_PLAINTEXT or SASL_SSL. For SASL, choose PLAIN, SCRAM-SHA-256 or SCRAM-SHA-512 and enter a username and password.
+4. For TLS, choose a PEM CA, PEM client certificate and key, or a PKCS#12 keystore. Leaving CA blank uses system trust. JKS requires manual conversion.
+5. Click **Test connection**. The result reports the cluster and broker count.
+6. Click **Save**, then **Connect** beside the saved profile.
 
-Kafi Kafi changes the active connection only after it can list topics from the selected cluster. If the connection fails, the previous active connection remains available and the editor shows the error.
+A failed switch preserves the active connection. Successful switching closes old message sessions. Credentials go to the system vault; if it is unavailable, the editor warns that the password is usable only for this process. Saved passwords are not returned to the editor.
 
-## Start a local Kafka cluster
+## Start local Kafka
 
-The control at the bottom of the navigation rail can run a single-node Apache Kafka KRaft container on Windows, macOS, or Linux. Its status dot shows whether the local broker is running; hover over the control to see the available action. The launcher requires the `podman` or `docker` command to be available on `PATH`; it does not require a separate shell.
+1. Start Podman or Docker and ensure its command is on PATH.
+2. Open **Settings** and click **Check runtime**.
+3. Click **Start local Kafka**. Wait for the container to run, then allow Kafka a few seconds to finish startup.
+4. Create and connect a PLAINTEXT profile for `localhost:9092`.
 
-1. Start Podman or Docker.
-2. Click the play icon at the bottom of the navigation rail.
-3. Wait until the panel reports that the container is running.
-4. Create and connect a profile for `localhost:9092`.
+The application prefers reachable Podman, then Docker. It owns `kafi-kafi-kraft`, labelled `com.kafikafi.owner=kafi-kafi`, and uses `apache/kafka:3.9.1`. **Stop local Kafka** stops and retains that container. A container with the same name but a different label is never changed.
 
-Kafi Kafi prefers Podman when both engines are installed. The container is named `kafka-kraft`; clicking the stop icon stops it without deleting it, so a later start reuses the same container.
+## Import or recover
 
-## Troubleshooting
-
-- **Neither podman nor docker is available:** install and start either container engine, or connect to an existing Kafka cluster instead.
-- **Connection test fails:** verify the bootstrap addresses, security protocol, credentials, certificate paths, network access, and Kafka ACLs.
-- **The application cannot read saved credentials:** restore both files in the original `~/.lightkafka/secrets` directory while keeping the same username, operating system name, and home-directory path, or re-enter the password fields and save the profile again.
+Settings offers import when `~/.lightkafka/storage.json` exists. See [credential migration](../security/credentials.md) for the exact fingerprint and certificate conversion requirements. Old files are retained. If a connection fails, check bootstrap addresses, security settings, certificate paths, network access and Kafka ACLs. If saved passwords cannot be loaded, re-enter them and save the profile again.

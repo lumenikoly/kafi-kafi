@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "payload": {
+    "profiles": [{
+      "id": "profile-legacy",
+      "name": "Legacy SASL SSL",
+      "bootstrapServers": ["kafka.example.test:9093", "kafka-backup.example.test:9093"],
+      "securityProtocol": "SASL_SSL",
+      "sasl": {"mechanism": "SCRAM_SHA_512", "username": "migration-user", "passwordSecretRef": "profile:profile-legacy:sasl-password"},
+      "ssl": {"truststorePath": "C:/certs/truststore.jks", "truststorePasswordSecretRef": "profile:profile-legacy:truststore-password", "keystorePath": "C:/certs/client.jks", "keystorePasswordSecretRef": "profile:profile-legacy:keystore-password", "keyPasswordSecretRef": "profile:profile-legacy:key-password"},
+      "clientId": "legacy-client",
+      "additionalProperties": {"socket.timeout.ms": "5000"}
+    }],
+    "templates": [{"id":"template-1","name":"Legacy template","topic":"events","partition":2,"key":"order-7","value":"{\"ok\":true}","headers":{"source":"legacy"},"updatedAtEpochMillis":1700000000123}],
+    "history": [{"id":"history-1","profileId":"profile-legacy","topic":"events","partition":2,"status":"SUCCESS","timestampEpochMillis":1700000000456,"errorMessage":null}],
+    "settings": {"defaultConsumerStartPosition":"EARLIEST","messageBufferLimit":25000}
+  }
+}

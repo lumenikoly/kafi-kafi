@@ -22,6 +22,6 @@ For the system boundary and module responsibilities, see the [architecture overv
 
 ## Local data and credentials
 
-Kafi Kafi stores profiles and settings in `~/.lightkafka/storage.json`. SASL and SSL password fields are encrypted with AES-GCM and stored separately in `~/.lightkafka/secrets/secrets.json`. The application derives the encryption key from the local username, operating system name, home-directory path, and a random salt.
+The Tauri runtime uses versioned JSON in the platform application-data directory and the system credential service. [Credential import and recovery](security/credentials.md) explains explicit migration from existing legacy user files.
 
-These files are local application storage, not a shared credential vault. Protect the user account and home directory on any computer that runs Kafi Kafi.
+For source builds and verification, see [development](development.md). For artifacts and release gates, see [releasing](releasing.md).

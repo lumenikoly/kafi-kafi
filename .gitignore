@@ -1,10 +1,6 @@
-.gradle/
-.kotlin/
 build/
 **/build/
 .idea/
-*.iml
-local.properties
 
 # ── GSD baseline (auto-generated) ──
 .gsd
@@ -32,3 +28,10 @@ vendor/
 coverage/
 .cache/
 tmp/
+.tmp/
+.tmp/toolchain/
+src-tauri/target-release/
+
+playwright-report/
+.tmp/playwright-results/
+test-results/
