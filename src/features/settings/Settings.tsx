@@ -21,6 +21,23 @@ export function Settings({
   const [importing, setImporting] = useState(false);
   const [container, setContainer] = useState<ContainerStatus | null>(null);
   const [busy, setBusy] = useState(false);
+  const changeTheme = async (theme: string) => {
+    const next = { ...settings, layout: { ...settings.layout, theme } };
+    setBusy(true);
+    setError("");
+    try {
+      await command("save_settings", { settings: next });
+      setDraft((previous) => ({
+        ...previous,
+        layout: { ...previous.layout, theme },
+      }));
+      onSave(next);
+    } catch (e) {
+      setError(errorMessage(e));
+    } finally {
+      setBusy(false);
+    }
+  };
   useEffect(() => {
     void command("get_legacy_status")
       .then(setLegacy)
@@ -40,37 +57,51 @@ export function Settings({
     }
   };
   return (
-    <section className="editor">
+    <section className="editor settings-editor">
       <h2>Settings</h2>
       <ErrorBanner message={error} />
       {notice && <output>{notice}</output>}
-      <Field label="Message buffer records">
-        <input
-          aria-label="Message buffer records"
-          type="number"
-          min="100"
-          max="100000"
-          value={draft.messageBufferLimit}
-          onChange={(e) =>
-            setDraft({ ...draft, messageBufferLimit: Number(e.target.value) })
-          }
-        />
+      <Field label="Theme">
+        <select
+          aria-label="Theme"
+          value={settings.layout.theme === "light" ? "light" : "dark"}
+          disabled={busy}
+          onChange={(e) => void changeTheme(e.target.value)}
+        >
+          <option value="dark">Dark</option>
+          <option value="light">Light</option>
+        </select>
       </Field>
-      <Field label="Message buffer MiB">
-        <input
-          aria-label="Message buffer MiB"
-          type="number"
-          min="1"
-          max="512"
-          value={draft.messageBufferBytes / (1024 * 1024)}
-          onChange={(e) =>
-            setDraft({
-              ...draft,
-              messageBufferBytes: Number(e.target.value) * 1024 * 1024,
-            })
-          }
-        />
-      </Field>
+      <h3>Messages</h3>
+      <div className="form-grid">
+        <Field label="Message buffer records">
+          <input
+            aria-label="Message buffer records"
+            type="number"
+            min="100"
+            max="100000"
+            value={draft.messageBufferLimit}
+            onChange={(e) =>
+              setDraft({ ...draft, messageBufferLimit: Number(e.target.value) })
+            }
+          />
+        </Field>
+        <Field label="Message buffer MiB">
+          <input
+            aria-label="Message buffer MiB"
+            type="number"
+            min="1"
+            max="512"
+            value={draft.messageBufferBytes / (1024 * 1024)}
+            onChange={(e) =>
+              setDraft({
+                ...draft,
+                messageBufferBytes: Number(e.target.value) * 1024 * 1024,
+              })
+            }
+          />
+        </Field>
+      </div>
       <Field label="Default start position">
         <select
           aria-label="Default start position"
@@ -85,6 +116,7 @@ export function Settings({
       </Field>
       <button
         type="button"
+        className="primary"
         disabled={busy}
         onClick={() => {
           setBusy(true);
@@ -102,10 +134,7 @@ export function Settings({
         Save settings
       </button>
       <h3>Local Kafka</h3>
-      <p className="muted">
-        Only the application-owned kafi-kafi-kraft container is managed. Kafka
-        listens on localhost:9092.
-      </p>
+      <p className="muted">localhost:9092 · Podman or Docker</p>
       {container && (
         <output>
           {container.runtime ?? "No runtime"} · {container.state} ·{" "}
@@ -137,7 +166,7 @@ export function Settings({
       </div>
       {legacy?.available && !legacy.imported && (
         <>
-          <h3>Import Kotlin configuration</h3>
+          <h3>Import existing profiles</h3>
           <p>{legacy.root}</p>
           <p className="muted">
             The old files are retained. JKS certificates require conversion to
@@ -152,13 +181,15 @@ export function Settings({
             />
           </Field>
           <button type="button" onClick={() => setImporting(true)}>
-            Import legacy storage
+            Import profiles
           </button>
         </>
       )}
       {importing && (
         <Confirmation
-          title="Import legacy configuration"
+          title="Import existing profiles"
+          confirmLabel="Import profiles"
+          destructive={false}
           busy={busy}
           onCancel={() => setImporting(false)}
           onConfirm={() => {
@@ -181,8 +212,8 @@ export function Settings({
           }}
         >
           <p>
-            Import profiles, settings, producer templates and saved credentials
-            from {legacy?.root}?
+            Import profiles, settings, message templates and passwords from{" "}
+            {legacy?.root}?
           </p>
           <ErrorBanner message={error} />
         </Confirmation>

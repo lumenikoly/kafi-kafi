@@ -19,14 +19,20 @@ const messageColumns = columnsFor<MessageRow>([
   ["valueType", "Type"],
   ["valueSize", "Bytes"],
 ]);
+const messageColumnWidths = [82, 108, 170, 150, undefined, 76, 90];
+messageColumns.forEach((column, index) => {
+  column.size = messageColumnWidths[index];
+});
 export function PayloadView({
   payload,
   raw,
+  nullLabel = "null (tombstone)",
 }: {
   payload: Payload | null;
   raw: boolean;
+  nullLabel?: string;
 }) {
-  if (!payload) return <pre>null (tombstone)</pre>;
+  if (!payload) return <pre>{nullLabel}</pre>;
   let content = payload.text ?? payload.preview;
   if (
     payload.kind === "json" &&
@@ -335,7 +341,7 @@ export function Messages({
               )}
             </div>
             <h4>Key</h4>
-            <PayloadView payload={detail.key} raw={raw} />
+            <PayloadView payload={detail.key} raw={raw} nullLabel="null" />
             <h4>Value</h4>
             <PayloadView payload={detail.value} raw={raw} />
             <h4>Headers</h4>

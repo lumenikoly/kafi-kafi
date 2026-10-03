@@ -11,9 +11,9 @@ Kafi Kafi is a desktop client for working with Apache Kafka clusters. It connect
 
 ## Visual example
 
-![Actual Kafi Kafi UI: connection test, record inspector, and message table](docs/assets/kafi-kafi-demo.gif)
+![Kafi Kafi 1.1.0: connection test, record inspector, producer, and light theme](docs/assets/kafi-kafi-demo.gif)
 
-A HyperFrames sequence of actual Windows Tauri UI captures: connection test, record inspection, and the bounded message table. These are captured states from separate native Kafka checks, not a continuous session recording. The interface comes from the application's React components and CSS in `src/`; no replacement interface or mock data was created for this example.
+Connect to a Kafka cluster, inspect and produce records, and browse messages in either theme. These frames show the native 1.1.0 application using a local Kafka broker.
 
 [Watch the MP4](docs/assets/kafi-kafi-demo.mp4) · [Full-size record inspector](videos/kafi-kafi-demo/assets/message-inspector.png) · [HyperFrames source and capture provenance](videos/kafi-kafi-demo/BRIEF.md)
 
@@ -25,7 +25,8 @@ A HyperFrames sequence of actual Windows Tauri UI captures: connection test, rec
 - Read messages from the latest offset, earliest offset, a specific offset, or a timestamp.
 - Pause and resume consumption, select a partition, and filter loaded messages by key or value.
 - Inspect message headers and complete JSON or text values, and identify binary payloads by size.
-- Produce records with an optional key and partition.
+- Produce records with an optional key and partition, or fill the form from an imported message template.
+- Choose a light or dark theme; the choice is saved for the next launch.
 - Inspect consumer group members, assignments, committed offsets, and lag; reset offsets or delete inactive groups.
 - Start a local single-node Kafka KRaft container through Podman or Docker.
 
@@ -77,7 +78,7 @@ cargo test --manifest-path src-tauri/Cargo.toml --locked
 pnpm tauri build
 ```
 
-See [development](docs/development.md) for real Kafka fixtures and [releasing](docs/releasing.md) for the SemVer-tag workflow, platform packages and SHA-256 manifests.
+See [development](docs/development.md) for real Kafka fixtures and [releasing](docs/releasing.md) for the SemVer-tag workflow, platform packages and SHA-256 manifests. [1.1.0 release notes](docs/releases/1.1.0.md) describe the prepared version and remaining publication gates.
 
 ## Documentation
 

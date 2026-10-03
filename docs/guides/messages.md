@@ -22,6 +22,8 @@ Native consumer failures stop the session and show an error. Restore the connect
 
 ## Produce a record
 
-Open the topic's **Produce** section. Enter an optional key, optional partition, value and optional headers as one `name=value` per line, then click **Send record**. Kafka's acknowledgement shows partition, offset and timestamp. An empty key is sent as null; an empty value is zero-length text. Enable **Null value (tombstone)** to send a null value explicitly. Production reuses the active connection's producer.
+Open the topic's **Produce** section. Enter an optional key, optional partition, value and optional headers as one `name=value` per line, then click **Send record**. Kafka's acknowledgement shows partition, offset and timestamp. Leaving the key field empty when entering a record manually sends a null key; an empty value is zero-length text. Enable **Null value (tombstone)** to send a null value explicitly. Production reuses the active connection's producer.
+
+Choose **Saved template** to fill the key, partition, value and headers from an imported template for this topic. Null and empty template keys remain distinct until you edit the key field. A null template value enables **Null value (tombstone)**. You can edit the fields before sending; selecting a template does not send a record or change the stored template. Templates for other topics are excluded. The current interface uses imported templates; it does not create or save templates.
 
 A delivery timeout may be ambiguous: verify whether the record arrived before retrying to avoid an unintended duplicate.

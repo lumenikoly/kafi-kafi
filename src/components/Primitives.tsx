@@ -55,12 +55,16 @@ export function Confirmation({
   onConfirm,
   onCancel,
   busy = false,
+  confirmLabel = "Confirm",
+  destructive = true,
 }: {
   title: string;
   children: ReactNode;
   onConfirm: () => void;
   onCancel: () => void;
   busy?: boolean;
+  confirmLabel?: string;
+  destructive?: boolean;
 }) {
   const panel = useRef<HTMLElement>(null);
   const cancel = useRef(onCancel);
@@ -110,12 +114,12 @@ export function Confirmation({
             Cancel
           </button>
           <button
-            className="danger"
+            className={destructive ? "danger" : "primary"}
             type="button"
             onClick={onConfirm}
             disabled={busy}
           >
-            Confirm
+            {confirmLabel}
           </button>
         </div>
       </section>

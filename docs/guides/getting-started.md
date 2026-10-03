@@ -24,6 +24,10 @@ Production packages contain the interface and native Kafka client. They use the 
 
 A failed switch preserves the active connection. Successful switching closes old message sessions. Credentials go to the system vault; if it is unavailable, the editor warns that the password is usable only for this process. Saved passwords are not returned to the editor.
 
+## Choose the interface theme
+
+Open **Settings → Theme** and select **Light** or **Dark**. The choice takes effect and saves immediately, including for the next launch. Existing installations default to Dark until a theme is selected. Changing the theme does not save other edits to message settings; use **Save settings** for those.
+
 ## Start local Kafka
 
 1. Start Podman or Docker and ensure its command is on PATH.

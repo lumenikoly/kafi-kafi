@@ -13,7 +13,7 @@ const profile: Profile = {
   extraProperties: {},
 };
 
-const settings: Settings = {
+let settings: Settings = {
   messageBufferLimit: 10_000,
   messageBufferBytes: 64 * 1024 * 1024,
   defaultConsumerStartPosition: "earliest",
@@ -42,6 +42,41 @@ const internals = {
         return [profile];
       case "get_settings":
         return settings;
+      case "save_settings":
+        settings = args.settings as Settings;
+        return null;
+      case "get_producer_templates":
+        return [
+          {
+            id: "imported-template",
+            name: "Order event",
+            topic,
+            partition: 0,
+            key: "order-7",
+            value: '{"ok":true}',
+            headers: { source: "legacy" },
+          },
+          {
+            id: "tombstone-template",
+            name: "Delete order",
+            topic,
+            partition: null,
+            key: "order-7",
+            value: null,
+            headers: {},
+          },
+          {
+            id: "other-topic-template",
+            name: "Other topic",
+            topic: "other",
+            key: null,
+            value: "other",
+            partition: null,
+            headers: {},
+          },
+        ];
+      case "produce_message":
+        return { partition: 0, offset: sent, timestamp: 1700000000000 };
       case "get_legacy_status":
         return { available: false, root: "", imported: false };
       case "connect":
