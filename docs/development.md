@@ -26,21 +26,21 @@ cargo test --manifest-path src-tauri/Cargo.toml --locked
 toudocu check docs --repository-root .
 ```
 
-Rust DTO export tests generate the TypeScript contract. Commit `src/ipc/generated/` with the Rust changes; CI rejects generated changes that were not committed. Kafka integration tests require an explicit bootstrap environment variable; an ordinary local test run skips that external-broker test.
+Rust DTO export tests generate the TypeScript contract. Commit `src/ipc/generated/` with the Rust changes; CI rejects generated changes that were not committed. Real Kafka integration tests are opt-in local checks and are not executed by CI or the release workflow. They require an explicit bootstrap environment variable; an ordinary local test run skips them.
 
 ```sh
 bash scripts/kafka-fixture.sh start
-KAFI_TEST_KAFKA_BOOTSTRAP=localhost:19092 cargo test --manifest-path src-tauri/Cargo.toml --locked --test kafka_integration
+KAFI_TEST_KAFKA_BOOTSTRAP=127.0.0.1:19092 cargo test --manifest-path src-tauri/Cargo.toml --locked --test kafka_integration
 bash scripts/kafka-fixture.sh stop
 ```
 
-Set `KAFI_CONTAINER_RUNTIME=podman` for Podman. The script checks the fixture's ownership label before deletion. Windows can run the same test target with a separately started fixture and `$env:KAFI_TEST_KAFKA_BOOTSTRAP='localhost:19092'`.
+Set `KAFI_CONTAINER_RUNTIME=podman` for Podman. The script checks the fixture's ownership label before deletion. Windows can run the same test target with a separately started fixture and `$env:KAFI_TEST_KAFKA_BOOTSTRAP='127.0.0.1:19092'`. Both fixtures bind their published ports to IPv4 loopback and advertise `127.0.0.1` to clients. Use that address for the test bootstrap to avoid resolving `localhost` to the unpublished IPv6 loopback address.
 
 The separate security fixture verifies SASL_SSL with PLAIN, SCRAM-SHA-256 and SCRAM-SHA-512, including rejection of incorrect passwords and untrusted certificates. Its certificates and password are public test data; never use them outside the isolated fixture.
 
 ```sh
 bash scripts/kafka-security-fixture.sh start
-KAFI_TEST_KAFKA_SECURE_BOOTSTRAP=localhost:19094 KAFI_TEST_KAFKA_SECURE_USERNAME=test-user KAFI_TEST_KAFKA_SECURE_PASSWORD=kafi-test-password cargo test --manifest-path src-tauri/Cargo.toml --locked --test kafka_security_integration
+KAFI_TEST_KAFKA_SECURE_BOOTSTRAP=127.0.0.1:19094 KAFI_TEST_KAFKA_SECURE_USERNAME=test-user KAFI_TEST_KAFKA_SECURE_PASSWORD=kafi-test-password cargo test --manifest-path src-tauri/Cargo.toml --locked --test kafka_security_integration
 bash scripts/kafka-security-fixture.sh stop
 ```
 

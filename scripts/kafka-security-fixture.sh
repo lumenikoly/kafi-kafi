@@ -49,7 +49,7 @@ fi
 
 for attempt in $(seq 1 60); do
   if "$runtime" exec -e KAFKA_HEAP_OPTS='-Xms32m -Xmx64m' "$name" /opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:19095 >/dev/null 2>&1; then
-    echo "Secure Kafka fixture ready at localhost:19094 (SASL_SSL); test user: test-user"
+    echo "Secure Kafka fixture ready at 127.0.0.1:19094 (SASL_SSL); test user: test-user"
     exit 0
   fi
   sleep 2

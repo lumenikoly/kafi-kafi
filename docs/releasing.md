@@ -1,8 +1,14 @@
 # Build and release the Tauri application
 
-The Tauri release workflow runs on an existing SemVer tag, `vX.Y.Z`. The tag must match `package.json`, `src-tauri/Cargo.toml` and `src-tauri/tauri.conf.json`. Do not create a migration release until the [migration acceptance criteria](work/TASK-MIGRATION-001.md) are verified.
+Start the `Tauri release` workflow manually from `main` with a new SemVer tag, `vX.Y.Z`. The tag must match `package.json`, `src-tauri/Cargo.toml` and `src-tauri/tauri.conf.json`. The workflow rejects other branches, malformed tags, version mismatches and tags that already exist. Do not create a migration release until the [migration acceptance criteria](work/TASK-MIGRATION-001.md) are verified.
 
-Ordinary CI and release checks require frontend validation, Rust lint and unit tests, real Kafka integration tests on Linux, and native compilation on all four target platforms. It then builds Windows x86_64 NSIS and portable ZIP packages, Linux x86_64 AppImage, and separate Intel and Apple Silicon macOS DMGs on their respective operating systems. Each artifact directory includes a SHA-256 manifest. Publishing depends on every platform build succeeding.
+1. Merge the release changes into `main`, including the matching version in all three manifests.
+2. Open GitHub **Actions → Tauri release → Run workflow**.
+3. Select **main**, enter the **tag** (for example `v0.2.0`), and click **Run workflow**. Do not create or push the tag beforehand.
+
+After all checks and platform packages succeed, the workflow creates the tag on the exact commit selected when the run started and publishes a GitHub Release with the packages, checksum manifests and generated release notes. Pushing a tag does not start a release. Release runs are serialized; a new run does not cancel one already in progress. The workflow must be merged into the repository's default branch before GitHub shows the manual launch button.
+
+Ordinary CI and release checks require frontend validation, Rust lint and unit tests, and native compilation on all four target platforms. Real Kafka integration tests run locally using the commands in [development](development.md); CI does not start brokers or execute these tests. The release workflow then builds Windows x86_64 NSIS and portable ZIP packages, Linux x86_64 AppImage, and separate Intel and Apple Silicon macOS DMGs on their respective operating systems. Each artifact directory includes a SHA-256 manifest. Publishing depends on every platform build succeeding.
 
 For a local package:
 

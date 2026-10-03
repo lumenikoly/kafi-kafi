@@ -28,6 +28,7 @@ vendor/
 coverage/
 .cache/
 tmp/
+.tmp/
 .tmp/toolchain/
 src-tauri/target-release/
 

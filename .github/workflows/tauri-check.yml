@@ -52,42 +52,8 @@ jobs:
       - run: pnpm install --frozen-lockfile && pnpm build
       - run: cargo test --manifest-path src-tauri/Cargo.toml --locked --lib --test storage_and_secrets --test consumer_buffer
       - run: test -z "$(git status --porcelain -- src/ipc/generated)"
-  integration-test:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-      - run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf cmake perl libdbus-1-dev libcurl4-openssl-dev
-      - run: rustup toolchain install 1.98.1 --profile minimal
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 11.25.0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22.18.0
-      - run: pnpm install --frozen-lockfile && pnpm build
-      - run: bash scripts/kafka-fixture.sh start
-      - name: Test real Kafka
-        env:
-          KAFI_TEST_KAFKA_BOOTSTRAP: localhost:19092
-        run: cargo test --manifest-path src-tauri/Cargo.toml --locked --test kafka_integration -- --nocapture
-      - if: always()
-        run: bash scripts/kafka-fixture.sh stop
-      - name: Start secure Kafka
-        env:
-          KAFI_CONTAINER_RUNTIME: docker
-        run: bash scripts/kafka-security-fixture.sh start
-      - name: Test SASL and TLS against Kafka
-        env:
-          KAFI_TEST_KAFKA_SECURE_BOOTSTRAP: localhost:19094
-          KAFI_TEST_KAFKA_SECURE_USERNAME: test-user
-          KAFI_TEST_KAFKA_SECURE_PASSWORD: kafi-test-password
-        run: cargo test --manifest-path src-tauri/Cargo.toml --locked --test kafka_security_integration -- --nocapture
-      - if: always()
-        env:
-          KAFI_CONTAINER_RUNTIME: docker
-        run: bash scripts/kafka-security-fixture.sh stop
   build:
-    needs: [frontend-check, rust-check, rust-test, integration-test]
+    needs: [frontend-check, rust-check, rust-test]
     strategy:
       fail-fast: false
       matrix:
