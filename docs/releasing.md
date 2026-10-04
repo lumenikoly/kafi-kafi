@@ -20,6 +20,8 @@ pnpm tauri build
 
 Platform prerequisites are described in [development](development.md). The Windows portable executable uses ordinary application-data storage. Windows uses the system WebView2 runtime; the installer can bootstrap it when missing. macOS uses the system WebKit and Linux packages use WebKitGTK. No separate Chromium or JVM is bundled.
 
+Desktop package icons are listed explicitly in `bundle.icon` in `src-tauri/tauri.conf.json`. Keep the referenced files under `src-tauri/icons`: square PNGs for Linux, ICO for Windows and ICNS for macOS. AppImage packaging requires a square PNG in that list; having icon files in the directory alone does not supply them to the bundler.
+
 The first workflow does not configure code-signing credentials, notarization or an automatic updater. Unsigned packages may require operating-system approval to launch. Add signing through repository secrets before a signed public release. GitHub Releases remains the distribution channel.
 
 ## Performance release gate

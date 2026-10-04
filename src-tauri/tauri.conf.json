@@ -8,5 +8,5 @@
     "windows": [{"label":"main","create":false,"title":"Kafi Kafi","width":1280,"height":800,"minWidth":900,"minHeight":600}],
     "security": {"csp":"default-src 'self'; connect-src ipc: http://ipc.localhost; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'"}
   },
-  "bundle": {"active":true,"targets":["nsis","dmg","appimage"],"category":"DeveloperTool","shortDescription":"A compact Kafka operator console","windows":{"webviewInstallMode":{"type":"downloadBootstrapper"}}}
+  "bundle": {"active":true,"targets":["nsis","dmg","appimage"],"icon":["icons/32x32.png","icons/128x128.png","icons/128x128@2x.png","icons/icon.icns","icons/icon.ico"],"category":"DeveloperTool","shortDescription":"A compact Kafka operator console","windows":{"webviewInstallMode":{"type":"downloadBootstrapper"}}}
 }
